@@ -1,6 +1,7 @@
 package com.wulingqi.lightning.portal.service.impl;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -58,9 +59,6 @@ public class MemberServiceImpl implements MemberService {
 	
     @Autowired
     private MemberMapper memberMapper;
-    
-    @Autowired
-    private MemberService memberService;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -464,6 +462,28 @@ public class MemberServiceImpl implements MemberService {
 		Member member = getMemberById(getCurrentMember().getId());
 		BeanUtils.copyProperties(member, memberInfoVo);
 		memberInfoVo.setMemberId(member.getId().toString());
+		memberInfoVo.setAccount(member.getPhone());
+		
+		if(member.getInviterId() != null) {
+			Member inviter = getMemberById(member.getInviterId());
+			if(StringUtils.isEmpty(inviter.getName())) {
+				memberInfoVo.setInviter(inviter.getNickname());
+			} else {
+				memberInfoVo.setInviter(inviter.getName());
+			}
+		}
+		memberInfoVo.setEffectiveStatus(String.valueOf(member.getEffectiveStatus()));
+		memberInfoVo.setStatus(String.valueOf(member.getStatus()));
+		
+		BigDecimal integration = new BigDecimal(member.getIntegration());
+		integration = integration.add(new BigDecimal(member.getFreezeIntegration()));
+		
+		memberInfoVo.setIntegration(integration.toPlainString());
+		memberInfoVo.setAvailableIntegration(member.getIntegration());
+		memberInfoVo.setFreezeIntegration(member.getFreezeIntegration());
+		
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		memberInfoVo.setCreateTime(df.format(member.getCreateTime()));
 		
 		return memberInfoVo;
 	}
