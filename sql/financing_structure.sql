@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `br_merchant_withdraw_apply` (
 DROP TABLE IF EXISTS `br_member`;
 CREATE TABLE IF NOT EXISTS `br_member` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
-  `username` varchar(64) DEFAULT NULL COMMENT '用户名',
+  `username` varchar(64) DEFAULT NULL COMMENT '用户名(暂未使用)',
   `password` varchar(64) DEFAULT NULL COMMENT '密码',
   `nickname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '昵称',
   `phone` varchar(64) DEFAULT NULL COMMENT '手机号码',
@@ -115,6 +115,7 @@ CREATE TABLE IF NOT EXISTS `br_member` (
   `job` varchar(100) DEFAULT NULL COMMENT '职业',
   `integration` varchar(32) DEFAULT NULL COMMENT '积分',
   `freeze_integration` varchar(32) DEFAULT NULL COMMENT '冻结积分',
+  `alipay_uid` varchar(64) DEFAULT NULL COMMENT '支付宝uid',
   `agent_ratio` varchar(6) DEFAULT NULL COMMENT '代理比例',
   `inviter_id` bigint(20) DEFAULT NULL COMMENT '邀请人id',
   `invite_code` varchar(6) DEFAULT NULL COMMENT '邀请码',
@@ -217,6 +218,28 @@ CREATE TABLE IF NOT EXISTS `br_member_statistics` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员统计信息表';
 
 
+DROP TABLE IF EXISTS `br_team_invite_statistics`;
+CREATE TABLE IF NOT EXISTS `br_team_invite_statistics` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
+  `statistics_date` date DEFAULT NULL COMMENT '统计日期',
+  `count` int(11) DEFAULT 0 COMMENT '团队邀请人数(包括自己邀请的)',
+  PRIMARY KEY (`id`),
+  KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员团队邀请统计信息表';
+
+
+DROP TABLE IF EXISTS `br_direct_invite_statistics`;
+CREATE TABLE IF NOT EXISTS `br_direct_invite_statistics` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
+  `statistics_date` date DEFAULT NULL COMMENT '统计日期',
+  `count` int(11) DEFAULT 0 COMMENT '邀请人数',
+  PRIMARY KEY (`id`),
+  KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员直接邀请统计信息表';
+
+
 DROP TABLE IF EXISTS `br_invite_statistics_handle_queue`;
 CREATE TABLE `br_invite_statistics_handle_queue` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -280,6 +303,7 @@ CREATE TABLE IF NOT EXISTS `br_verification_code` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `receiver` varchar(64) DEFAULT NULL COMMENT '手机号/邮箱',
   `receiver_type` int(1) DEFAULT NULL COMMENT '接收类型: 0->手机号; 1->邮箱',
+  `verify_type` int(1) DEFAULT NULL COMMENT '验证类型: 0->注册; 1->忘记密码; 2->修改密码',
   `ip` varchar(64) DEFAULT NULL COMMENT 'IP地址',
   `content` varchar(10) DEFAULT NULL COMMENT '内容',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -292,6 +316,11 @@ CREATE TABLE IF NOT EXISTS `br_verification_code` (
 DELETE FROM `br_business_dictionary`;
 INSERT INTO `br_business_dictionary` (`name`, `value`, `comment`, `show_status`, `update_time`) VALUES
 	('system_maintenance_switch', 'false', '系统维护开关(false表示没有维护,true表示系统维护中)', 1, now());
+
+INSERT INTO `br_business_dictionary` (`name`, `value`, `comment`, `show_status`, `update_time`) VALUES
+	('member_agent_ratio', '0.02', '会员默认代理分销比例', 1, now());
+
+
 DELETE FROM `br_general_data`;
 
 

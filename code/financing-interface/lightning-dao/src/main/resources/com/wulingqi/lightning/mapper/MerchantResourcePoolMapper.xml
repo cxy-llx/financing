@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.MerchantResourcePoolMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.MerchantResourcePool">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_merchant_resource_pool
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.MerchantResourcePool">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_merchant_resource_pool (merchant_id, member_id, create_time
+      )
+    values (#{merchantId,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.MerchantResourcePool">
+    update br_merchant_resource_pool
+    set merchant_id = #{merchantId,jdbcType=BIGINT},
+      member_id = #{memberId,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, merchant_id, member_id, create_time
+    from br_merchant_resource_pool
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, merchant_id, member_id, create_time
+    from br_merchant_resource_pool
+  </select>
+</mapper>

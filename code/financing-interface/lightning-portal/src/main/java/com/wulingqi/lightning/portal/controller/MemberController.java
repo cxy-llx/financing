@@ -11,7 +11,6 @@ import com.wulingqi.lightning.portal.dto.AuthCodeDto;
 import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
-import com.wulingqi.lightning.portal.dto.ModifyPayPasswordDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
 import com.wulingqi.lightning.portal.service.MemberService;
 import com.wulingqi.lightning.portal.vo.LoginVo;
@@ -57,8 +56,8 @@ public class MemberController {
     
     @ApiOperation("获取验证码")
     @RequestMapping(value = "/getAuthCode", method = RequestMethod.POST)
-    public CommonResult<String> getAuthCode(@RequestBody AuthCodeDto authCodeDto) {
-        return memberService.getAuthCode(authCodeDto.getPhone());
+    public CommonResult<String> getAuthCode(@RequestBody AuthCodeDto requestDto) {
+        return memberService.getAuthCode(requestDto);
     }
 
     @ApiOperation("获取会员个人信息")
@@ -66,12 +65,6 @@ public class MemberController {
     public CommonResult<MemberInfoVo> getMemberInfo() {
 		MemberInfoVo result = memberService.getMemberInfo();
         return CommonResult.success(result);
-    }
-    
-    @ApiOperation(value = "修改支付密码")
-    @RequestMapping(value = "/modifyPayPassword", method = RequestMethod.POST)
-    public CommonResult<String> modifyPayPassword(@RequestBody ModifyPayPasswordDto requestDto) {
-        return memberService.modifyPayPassword(requestDto);
     }
 
 }

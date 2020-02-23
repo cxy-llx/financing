@@ -10,7 +10,7 @@ public class Member implements Serializable {
     private Long id;
 
     /**
-     * 用户名
+     * 用户名(暂未使用)
      */
     private String username;
 
@@ -18,11 +18,6 @@ public class Member implements Serializable {
      * 密码
      */
     private String password;
-
-    /**
-     * 支付密码
-     */
-    private String payPassword;
 
     /**
      * 昵称
@@ -33,6 +28,11 @@ public class Member implements Serializable {
      * 手机号码
      */
     private String phone;
+
+    /**
+     * 邮箱
+     */
+    private String email;
 
     /**
      * 姓名
@@ -65,14 +65,24 @@ public class Member implements Serializable {
     private String job;
 
     /**
-     * 用户来源
-     */
-    private Integer sourceType;
-
-    /**
      * 积分
      */
-    private Integer integration;
+    private String integration;
+
+    /**
+     * 冻结积分
+     */
+    private String freezeIntegration;
+
+    /**
+     * 支付宝uid
+     */
+    private String alipayUid;
+
+    /**
+     * 代理比例
+     */
+    private String agentRatio;
 
     /**
      * 邀请人id
@@ -85,6 +95,11 @@ public class Member implements Serializable {
     private String inviteCode;
 
     /**
+     * 有效会员状态: 0->无效; 1->有效
+     */
+    private Integer effectiveStatus;
+
+    /**
      * 帐号启用状态:0->禁用；1->启用
      */
     private Integer status;
@@ -93,6 +108,11 @@ public class Member implements Serializable {
      * 注册时间
      */
     private Date createTime;
+
+    /**
+     * 乐观锁版本号
+     */
+    private Long version;
 
     private static final long serialVersionUID = 1L;
 
@@ -120,14 +140,6 @@ public class Member implements Serializable {
         this.password = password;
     }
 
-    public String getPayPassword() {
-        return payPassword;
-    }
-
-    public void setPayPassword(String payPassword) {
-        this.payPassword = payPassword;
-    }
-
     public String getNickname() {
         return nickname;
     }
@@ -142,6 +154,14 @@ public class Member implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {
@@ -192,20 +212,36 @@ public class Member implements Serializable {
         this.job = job;
     }
 
-    public Integer getSourceType() {
-        return sourceType;
-    }
-
-    public void setSourceType(Integer sourceType) {
-        this.sourceType = sourceType;
-    }
-
-    public Integer getIntegration() {
+    public String getIntegration() {
         return integration;
     }
 
-    public void setIntegration(Integer integration) {
+    public void setIntegration(String integration) {
         this.integration = integration;
+    }
+
+    public String getFreezeIntegration() {
+        return freezeIntegration;
+    }
+
+    public void setFreezeIntegration(String freezeIntegration) {
+        this.freezeIntegration = freezeIntegration;
+    }
+
+    public String getAlipayUid() {
+        return alipayUid;
+    }
+
+    public void setAlipayUid(String alipayUid) {
+        this.alipayUid = alipayUid;
+    }
+
+    public String getAgentRatio() {
+        return agentRatio;
+    }
+
+    public void setAgentRatio(String agentRatio) {
+        this.agentRatio = agentRatio;
     }
 
     public Long getInviterId() {
@@ -224,6 +260,14 @@ public class Member implements Serializable {
         this.inviteCode = inviteCode;
     }
 
+    public Integer getEffectiveStatus() {
+        return effectiveStatus;
+    }
+
+    public void setEffectiveStatus(Integer effectiveStatus) {
+        this.effectiveStatus = effectiveStatus;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -240,6 +284,14 @@ public class Member implements Serializable {
         this.createTime = createTime;
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -249,21 +301,25 @@ public class Member implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", username=").append(username);
         sb.append(", password=").append(password);
-        sb.append(", payPassword=").append(payPassword);
         sb.append(", nickname=").append(nickname);
         sb.append(", phone=").append(phone);
+        sb.append(", email=").append(email);
         sb.append(", name=").append(name);
         sb.append(", avatarUrl=").append(avatarUrl);
         sb.append(", gender=").append(gender);
         sb.append(", birthday=").append(birthday);
         sb.append(", city=").append(city);
         sb.append(", job=").append(job);
-        sb.append(", sourceType=").append(sourceType);
         sb.append(", integration=").append(integration);
+        sb.append(", freezeIntegration=").append(freezeIntegration);
+        sb.append(", alipayUid=").append(alipayUid);
+        sb.append(", agentRatio=").append(agentRatio);
         sb.append(", inviterId=").append(inviterId);
         sb.append(", inviteCode=").append(inviteCode);
+        sb.append(", effectiveStatus=").append(effectiveStatus);
         sb.append(", status=").append(status);
         sb.append(", createTime=").append(createTime);
+        sb.append(", version=").append(version);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

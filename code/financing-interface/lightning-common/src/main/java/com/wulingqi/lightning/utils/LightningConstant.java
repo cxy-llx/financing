@@ -56,9 +56,63 @@ public class LightningConstant {
      */
     public static final Integer ONLINE_STATUS_ONLINE = 1;
     
+    /**
+     * 验证类型: 0->注册
+     */
+    public static final Integer VERIFY_TYPE_REGISTER = 0;
+    
+    /**
+     * 验证类型: 1->忘记密码
+     */
+    public static final Integer VERIFY_TYPE_FORGET_PW = 1;
+    
+    /**
+     * 验证类型: 2->修改密码
+     */
+    public static final Integer VERIFY_TYPE_EDIT_PW = 2;
+    
+    /**
+     * 接收类型: 0->手机号
+     */
+    public static final Integer RECEIVER_TYPE_PHONE = 0;
+    
+    /**
+     * 接收类型: 1->邮箱
+     */
+    public static final Integer RECEIVER_TYPE_EMAIL = 1;
+    
+    /**
+     * 有效会员状态: 0->无效
+     */
+    public static final Integer EFFECTIVE_STATUS_NO = 0;
+    
+    /**
+     * 有效会员状态: 1->有效
+     */
+    public static final Integer EFFECTIVE_STATUS_YES = 1;
+    
+    /**
+     * 处理状态: 0->未处理
+     */
+    public static final Integer HANDLE_STATUS_NO = 0;
+    
+    /**
+     * 处理状态: 1->已处理
+     */
+    public static final Integer HANDLE_STATUS_YES = 1;
+    
     
     //----------------------------------业务字典start------------------------------------//
+    
+    /**
+     * 系统维护开关(false表示没有维护,true表示系统维护中)
+     */
     public static final String SYSTEM_MAINTENANCE_SWITCH = "system_maintenance_switch";
+    
+    /**
+     * 会员默认代理分销比例
+     */
+    public static final String MEMBER_AGENT_RATIO = "member_agent_ratio";
     
 	
 	//----------------------------------通用数据字典start------------------------------------//

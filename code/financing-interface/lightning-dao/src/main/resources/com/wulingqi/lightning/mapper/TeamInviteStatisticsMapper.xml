@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.TeamInviteStatisticsMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.TeamInviteStatistics">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="statistics_date" jdbcType="DATE" property="statisticsDate" />
+    <result column="count" jdbcType="INTEGER" property="count" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_team_invite_statistics
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.TeamInviteStatistics">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_team_invite_statistics (member_id, statistics_date, count
+      )
+    values (#{memberId,jdbcType=BIGINT}, #{statisticsDate,jdbcType=DATE}, #{count,jdbcType=INTEGER}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.TeamInviteStatistics">
+    update br_team_invite_statistics
+    set member_id = #{memberId,jdbcType=BIGINT},
+      statistics_date = #{statisticsDate,jdbcType=DATE},
+      count = #{count,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, member_id, statistics_date, count
+    from br_team_invite_statistics
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, member_id, statistics_date, count
+    from br_team_invite_statistics
+  </select>
+</mapper>

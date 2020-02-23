@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.MerchantMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.Merchant">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="passwd_salt" jdbcType="VARCHAR" property="passwdSalt" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="mch_id" jdbcType="VARCHAR" property="mchId" />
+    <result column="mch_key" jdbcType="VARCHAR" property="mchKey" />
+    <result column="balance" jdbcType="VARCHAR" property="balance" />
+    <result column="freeze_balance" jdbcType="VARCHAR" property="freezeBalance" />
+    <result column="settlement_rate" jdbcType="VARCHAR" property="settlementRate" />
+    <result column="login_time" jdbcType="TIMESTAMP" property="loginTime" />
+    <result column="login_ip" jdbcType="VARCHAR" property="loginIp" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="delete_status" jdbcType="INTEGER" property="deleteStatus" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="version" jdbcType="BIGINT" property="version" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_merchant
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.Merchant">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_merchant (user_id, name, password, 
+      passwd_salt, phone, avatar_url, 
+      mch_id, mch_key, balance, 
+      freeze_balance, settlement_rate, login_time, 
+      login_ip, status, delete_status, 
+      update_time, create_time, version
+      )
+    values (#{userId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{passwdSalt,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{avatarUrl,jdbcType=VARCHAR}, 
+      #{mchId,jdbcType=VARCHAR}, #{mchKey,jdbcType=VARCHAR}, #{balance,jdbcType=VARCHAR}, 
+      #{freezeBalance,jdbcType=VARCHAR}, #{settlementRate,jdbcType=VARCHAR}, #{loginTime,jdbcType=TIMESTAMP}, 
+      #{loginIp,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{deleteStatus,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, #{version,jdbcType=BIGINT}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.Merchant">
+    update br_merchant
+    set user_id = #{userId,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      passwd_salt = #{passwdSalt,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      mch_id = #{mchId,jdbcType=VARCHAR},
+      mch_key = #{mchKey,jdbcType=VARCHAR},
+      balance = #{balance,jdbcType=VARCHAR},
+      freeze_balance = #{freezeBalance,jdbcType=VARCHAR},
+      settlement_rate = #{settlementRate,jdbcType=VARCHAR},
+      login_time = #{loginTime,jdbcType=TIMESTAMP},
+      login_ip = #{loginIp,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      delete_status = #{deleteStatus,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, user_id, name, password, passwd_salt, phone, avatar_url, mch_id, mch_key, 
+    balance, freeze_balance, settlement_rate, login_time, login_ip, status, delete_status, 
+    update_time, create_time, version
+    from br_merchant
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, name, password, passwd_salt, phone, avatar_url, mch_id, mch_key, 
+    balance, freeze_balance, settlement_rate, login_time, login_ip, status, delete_status, 
+    update_time, create_time, version
+    from br_merchant
+  </select>
+</mapper>

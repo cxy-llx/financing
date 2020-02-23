@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.MerchantWithdrawApplyMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.MerchantWithdrawApply">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="poundage" jdbcType="VARCHAR" property="poundage" />
+    <result column="actual_value" jdbcType="VARCHAR" property="actualValue" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="bank_account" jdbcType="VARCHAR" property="bankAccount" />
+    <result column="bank_card_no" jdbcType="VARCHAR" property="bankCardNo" />
+    <result column="withdraw_status" jdbcType="INTEGER" property="withdrawStatus" />
+    <result column="failed_reason" jdbcType="VARCHAR" property="failedReason" />
+    <result column="arrived_time" jdbcType="TIMESTAMP" property="arrivedTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_merchant_withdraw_apply
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.MerchantWithdrawApply">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_merchant_withdraw_apply (merchant_id, value, poundage, 
+      actual_value, bank_name, bank_account, 
+      bank_card_no, withdraw_status, failed_reason, 
+      arrived_time, create_time)
+    values (#{merchantId,jdbcType=BIGINT}, #{value,jdbcType=VARCHAR}, #{poundage,jdbcType=VARCHAR}, 
+      #{actualValue,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, 
+      #{bankCardNo,jdbcType=VARCHAR}, #{withdrawStatus,jdbcType=INTEGER}, #{failedReason,jdbcType=VARCHAR}, 
+      #{arrivedTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.MerchantWithdrawApply">
+    update br_merchant_withdraw_apply
+    set merchant_id = #{merchantId,jdbcType=BIGINT},
+      value = #{value,jdbcType=VARCHAR},
+      poundage = #{poundage,jdbcType=VARCHAR},
+      actual_value = #{actualValue,jdbcType=VARCHAR},
+      bank_name = #{bankName,jdbcType=VARCHAR},
+      bank_account = #{bankAccount,jdbcType=VARCHAR},
+      bank_card_no = #{bankCardNo,jdbcType=VARCHAR},
+      withdraw_status = #{withdrawStatus,jdbcType=INTEGER},
+      failed_reason = #{failedReason,jdbcType=VARCHAR},
+      arrived_time = #{arrivedTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, merchant_id, value, poundage, actual_value, bank_name, bank_account, bank_card_no, 
+    withdraw_status, failed_reason, arrived_time, create_time
+    from br_merchant_withdraw_apply
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, merchant_id, value, poundage, actual_value, bank_name, bank_account, bank_card_no, 
+    withdraw_status, failed_reason, arrived_time, create_time
+    from br_merchant_withdraw_apply
+  </select>
+</mapper>

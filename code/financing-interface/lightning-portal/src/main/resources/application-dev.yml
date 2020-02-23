@@ -1,7 +1,7 @@
 
 spring:
   datasource:
-    url: jdbc:mysql://47.104.224.184:3306/test_brushing?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://47.104.224.184:3306/brushing?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: 507admin
     druid:

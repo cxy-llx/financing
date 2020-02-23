@@ -8,14 +8,17 @@ import lombok.Data;
 @ApiModel("会员注册参数")
 public class RegisterDto {
 
-	@ApiModelProperty(value = "手机号码")
-	private String phone;
+	@ApiModelProperty(value = "账号")
+	private String account;
 	
 	@ApiModelProperty(value = "验证码")
 	private String authCode;
 	
 	@ApiModelProperty(value = "邀请码")
 	private String inviteCode;
+	
+	@ApiModelProperty(value = "代理比例(测试邀请码可以不传代理比例)")
+	private String agentRatio;
 	
 	@ApiModelProperty(value = "密码")
 	private String password;

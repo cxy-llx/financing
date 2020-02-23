@@ -6,15 +6,15 @@
         SELECT
             *
         FROM
-            mall_app_upgrade
+            br_app_upgrade
         WHERE type = #{type}
     </select>
     
-    <select id="selectSmsCodeByPhoneAndMinute" resultMap="com.wulingqi.lightning.mapper.SmsCodeMapper.BaseResultMap">
+    <select id="selectVerificationCodeByReceiverAndMinute" resultMap="com.wulingqi.lightning.mapper.VerificationCodeMapper.BaseResultMap">
         select
             *
         from
-            mall_sms_code
+            br_verification_code
         where phone = #{phone}
         and create_time >= DATE_SUB(NOW(), INTERVAL #{minute} MINUTE)
     </select>

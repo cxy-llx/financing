@@ -50,15 +50,6 @@
         -->
         
         <!--
-        <table tableName="br_member" domainObjectName="Member" 
-			enableCountByExample="false"
-			enableUpdateByExample="false"
-			enableDeleteByExample="false"
-			enableSelectByExample="false"
-			selectByExampleQueryId="false" >
-            <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
-        
         <table tableName="br_general_data" domainObjectName="GeneralData" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
@@ -95,7 +86,115 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
-        <table tableName="br_sms_code" domainObjectName="SmsCode" 
+        <table tableName="br_verification_code" domainObjectName="VerificationCode" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_merchant" domainObjectName="Merchant" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_merchant_balance_trade" domainObjectName="MerchantBalanceTrade" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_merchant_resource_pool" domainObjectName="MerchantResourcePool" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_merchant_withdraw_apply" domainObjectName="MerchantWithdrawApply" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_member_integration_trade" domainObjectName="MemberIntegrationTrade" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_manager_operate_member_account_log" domainObjectName="ManagerOperateMemberAccountLog" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_collection_bank_info" domainObjectName="CollectionBankInfo" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_offline_recharge_record" domainObjectName="OfflineRechargeRecord" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_effective_member_statistics" domainObjectName="EffectiveMemberStatistics" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_member_statistics" domainObjectName="MemberStatistics" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_invite_statistics_handle_queue" domainObjectName="InviteStatisticsHandleQueue" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_member" domainObjectName="Member" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
 			enableDeleteByExample="false"
@@ -104,6 +203,26 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         -->
+        
+        <table tableName="br_team_invite_statistics" domainObjectName="TeamInviteStatistics" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_direct_invite_statistics" domainObjectName="DirectInviteStatistics" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        
         
     </context>
 </generatorConfiguration>

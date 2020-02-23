@@ -3,21 +3,26 @@ package com.wulingqi.lightning.model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class SmsCode implements Serializable {
+public class CollectionBankInfo implements Serializable {
     /**
      * 主键id
      */
     private Long id;
 
     /**
-     * 手机号码
+     * 银行名称
      */
-    private String phone;
+    private String bankName;
 
     /**
-     * 内容
+     * 银行账户名
      */
-    private String content;
+    private String bankAccount;
+
+    /**
+     * 银行卡卡号
+     */
+    private String bankCardNo;
 
     /**
      * 创建时间
@@ -34,20 +39,28 @@ public class SmsCode implements Serializable {
         this.id = id;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getBankName() {
+        return bankName;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 
-    public String getContent() {
-        return content;
+    public String getBankAccount() {
+        return bankAccount;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setBankAccount(String bankAccount) {
+        this.bankAccount = bankAccount;
+    }
+
+    public String getBankCardNo() {
+        return bankCardNo;
+    }
+
+    public void setBankCardNo(String bankCardNo) {
+        this.bankCardNo = bankCardNo;
     }
 
     public Date getCreateTime() {
@@ -65,8 +78,9 @@ public class SmsCode implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", phone=").append(phone);
-        sb.append(", content=").append(content);
+        sb.append(", bankName=").append(bankName);
+        sb.append(", bankAccount=").append(bankAccount);
+        sb.append(", bankCardNo=").append(bankCardNo);
         sb.append(", createTime=").append(createTime);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

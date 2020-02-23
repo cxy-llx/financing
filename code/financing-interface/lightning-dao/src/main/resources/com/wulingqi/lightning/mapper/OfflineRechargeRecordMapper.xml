@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.OfflineRechargeRecordMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.OfflineRechargeRecord">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="collection_account_name" jdbcType="VARCHAR" property="collectionAccountName" />
+    <result column="collection_bank_name" jdbcType="VARCHAR" property="collectionBankName" />
+    <result column="collection_bank_card_no" jdbcType="VARCHAR" property="collectionBankCardNo" />
+    <result column="payment_account_name" jdbcType="VARCHAR" property="paymentAccountName" />
+    <result column="payment_bank_name" jdbcType="VARCHAR" property="paymentBankName" />
+    <result column="payment_bank_card_no" jdbcType="VARCHAR" property="paymentBankCardNo" />
+    <result column="payment_screenshot" jdbcType="VARCHAR" property="paymentScreenshot" />
+    <result column="recharge_status" jdbcType="INTEGER" property="rechargeStatus" />
+    <result column="failed_reason" jdbcType="VARCHAR" property="failedReason" />
+    <result column="recharge_time" jdbcType="TIMESTAMP" property="rechargeTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_offline_recharge_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.OfflineRechargeRecord">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_offline_recharge_record (member_id, value, collection_account_name, 
+      collection_bank_name, collection_bank_card_no, 
+      payment_account_name, payment_bank_name, payment_bank_card_no, 
+      payment_screenshot, recharge_status, failed_reason, 
+      recharge_time, create_time)
+    values (#{memberId,jdbcType=BIGINT}, #{value,jdbcType=VARCHAR}, #{collectionAccountName,jdbcType=VARCHAR}, 
+      #{collectionBankName,jdbcType=VARCHAR}, #{collectionBankCardNo,jdbcType=VARCHAR}, 
+      #{paymentAccountName,jdbcType=VARCHAR}, #{paymentBankName,jdbcType=VARCHAR}, #{paymentBankCardNo,jdbcType=VARCHAR}, 
+      #{paymentScreenshot,jdbcType=VARCHAR}, #{rechargeStatus,jdbcType=INTEGER}, #{failedReason,jdbcType=VARCHAR}, 
+      #{rechargeTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.OfflineRechargeRecord">
+    update br_offline_recharge_record
+    set member_id = #{memberId,jdbcType=BIGINT},
+      value = #{value,jdbcType=VARCHAR},
+      collection_account_name = #{collectionAccountName,jdbcType=VARCHAR},
+      collection_bank_name = #{collectionBankName,jdbcType=VARCHAR},
+      collection_bank_card_no = #{collectionBankCardNo,jdbcType=VARCHAR},
+      payment_account_name = #{paymentAccountName,jdbcType=VARCHAR},
+      payment_bank_name = #{paymentBankName,jdbcType=VARCHAR},
+      payment_bank_card_no = #{paymentBankCardNo,jdbcType=VARCHAR},
+      payment_screenshot = #{paymentScreenshot,jdbcType=VARCHAR},
+      recharge_status = #{rechargeStatus,jdbcType=INTEGER},
+      failed_reason = #{failedReason,jdbcType=VARCHAR},
+      recharge_time = #{rechargeTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, member_id, value, collection_account_name, collection_bank_name, collection_bank_card_no, 
+    payment_account_name, payment_bank_name, payment_bank_card_no, payment_screenshot, 
+    recharge_status, failed_reason, recharge_time, create_time
+    from br_offline_recharge_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, member_id, value, collection_account_name, collection_bank_name, collection_bank_card_no, 
+    payment_account_name, payment_bank_name, payment_bank_card_no, payment_screenshot, 
+    recharge_status, failed_reason, recharge_time, create_time
+    from br_offline_recharge_record
+  </select>
+</mapper>

@@ -8,8 +8,8 @@ import lombok.Data;
 @ApiModel("登录参数")
 public class LoginDto {
 
-	@ApiModelProperty(value = "手机号码")
-	private String phone;
+	@ApiModelProperty(value = "账号")
+	private String account;
 	
 	@ApiModelProperty(value = "密码")
 	private String password;

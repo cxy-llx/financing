@@ -1,11 +1,13 @@
 package com.wulingqi.lightning.portal.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -13,26 +15,31 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.mapper.InviteStatisticsHandleQueueMapper;
 import com.wulingqi.lightning.mapper.MemberMapper;
-import com.wulingqi.lightning.mapper.SmsCodeMapper;
+import com.wulingqi.lightning.mapper.MemberStatisticsMapper;
 import com.wulingqi.lightning.mapper.TeamLevelMapper;
+import com.wulingqi.lightning.mapper.VerificationCodeMapper;
+import com.wulingqi.lightning.model.InviteStatisticsHandleQueue;
 import com.wulingqi.lightning.model.Member;
-import com.wulingqi.lightning.model.SmsCode;
+import com.wulingqi.lightning.model.MemberStatistics;
 import com.wulingqi.lightning.model.TeamLevel;
+import com.wulingqi.lightning.model.VerificationCode;
 import com.wulingqi.lightning.portal.domain.MemberDetails;
+import com.wulingqi.lightning.portal.dto.AuthCodeDto;
 import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
-import com.wulingqi.lightning.portal.dto.ModifyPayPasswordDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMemberMapper;
+import com.wulingqi.lightning.portal.service.CommonService;
 import com.wulingqi.lightning.portal.service.MemberService;
 import com.wulingqi.lightning.portal.service.RedisService;
 import com.wulingqi.lightning.portal.util.JwtTokenUtil;
+import com.wulingqi.lightning.portal.util.RegexpUtils;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
 import com.wulingqi.lightning.utils.LightningConstant;
@@ -45,6 +52,9 @@ import com.wulingqi.lightning.utils.StringUtils;
 public class MemberServiceImpl implements MemberService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MemberServiceImpl.class);
+	
+	@Autowired
+	private CommonService commonService;
 	
     @Autowired
     private MemberMapper memberMapper;
@@ -77,7 +87,13 @@ public class MemberServiceImpl implements MemberService {
     private PortalMapper portalMapper;
     
     @Autowired
-    private SmsCodeMapper smsCodeMapper;
+    private VerificationCodeMapper verificationCodeMapper;
+    
+    @Autowired
+    private MemberStatisticsMapper memberStatisticsMapper;
+    
+    @Autowired
+    private InviteStatisticsHandleQueueMapper inviteStatisticsHandleQueueMapper;
     
     @Value("${jwt.tokenHead}")
     private String tokenHead;
@@ -95,14 +111,14 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public Member getByUsername(String username) {
-    	return portalMemberMapper.selectMemberByPhone(username);
+    	return portalMemberMapper.selectMemberByAccount(username);
     }
 
     @Override
     public  CommonResult<LoginVo> register(RegisterDto requestDto) {
     	
     	//判断输入参数是否为空
-    	if(StringUtils.isEmpty(requestDto.getPhone()) ||
+    	if(StringUtils.isEmpty(requestDto.getAccount()) ||
     			StringUtils.isEmpty(requestDto.getAuthCode()) ||
     			StringUtils.isEmpty(requestDto.getPassword()) ||
     			StringUtils.isEmpty(requestDto.getRePassword())) {
@@ -114,45 +130,60 @@ public class MemberServiceImpl implements MemberService {
     	}
     	
         //验证验证码
-        if(!verifyAuthCode(requestDto.getAuthCode(), requestDto.getPhone())){
+        if(!verifyAuthCode(requestDto.getAuthCode(), requestDto.getAccount())){
             return CommonResult.failed("验证码错误");
         }
         
         //查询是否已有该用户
-        Member member = portalMemberMapper.selectMemberByPhone(requestDto.getPhone());
+        Member member = portalMemberMapper.selectMemberByAccount(requestDto.getAccount());
         if (member != null) {
-            return CommonResult.failed("该用户已经存在");
+            return CommonResult.failed("用户已存在，请直接登录");
         }
         
         Member inviter = null;
-        if(!"123456".equals(requestDto.getInviteCode())) {
+        BigDecimal agentRatio = null;
+        if(!"000000".equals(requestDto.getInviteCode())) {
         	inviter = portalMemberMapper.selectMemberByInviteCode(requestDto.getInviteCode());
             if(inviter == null) {
             	return CommonResult.failed("邀请码不存在");
+            } else {
+            	/**
+            	 * 判断代理比例是否在邀请人分享时设置的范围
+            	 * 代理比例必须小于等于邀请人的代理比例并且不能小于等于0
+            	 */
+            	if(StringUtils.isEmpty(inviter.getAgentRatio())) {
+            		return CommonResult.failed(LightningConstant.SERVER_ERROR);
+            	}
+            	BigDecimal inviterAgentRatio = new BigDecimal(inviter.getAgentRatio());
+            	agentRatio = new BigDecimal(requestDto.getAgentRatio());
+            	
+            	if(agentRatio.compareTo(inviterAgentRatio) > 0
+            			|| agentRatio.compareTo(new BigDecimal("0")) < 1) {
+            		return CommonResult.failed(LightningConstant.SERVER_ERROR);
+            	}
+            	
             }
+        } else {
+        	agentRatio = new BigDecimal(commonService.getDictionaryValue(LightningConstant.MEMBER_AGENT_RATIO));
         }
         
-        /*
-        Member inviter = null;
-        if(!StringUtils.isEmpty(requestDto.getInviteCode())) {
-        	inviter = portalMemberMapper.selectMemberByInviteCode(requestDto.getInviteCode());
-            if(inviter == null) {
-            	return CommonResult.failed("邀请码不存在");
-            }
-        }
-        */
-        
+        Date currentDate = new Date();
         member = new Member();
         //没有该用户进行添加操作
-        member.setUsername(requestDto.getPhone());
-        member.setPhone(requestDto.getPhone());
+        member.setUsername(null);
         member.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        member.setCreateTime(new Date());
-        member.setIntegration(0);
+        member.setEmail(null);
+        member.setPhone(requestDto.getAccount());
+        member.setCreateTime(currentDate);
+        member.setIntegration("0.00");
+        member.setFreezeIntegration("0.00");
         member.setGender(0); //性别：0->未知；1->男；2->女
         member.setStatus(LightningConstant.STATUS_ENABLE); //帐号启用状态: 1->启用
+        member.setEffectiveStatus(LightningConstant.EFFECTIVE_STATUS_NO); //有效会员状态: 0->无效
         
         member.setInviterId(inviter == null ? null : inviter.getId());
+        member.setAgentRatio(agentRatio.toPlainString());
+        member.setVersion(1L);
         
         StringBuilder num = new StringBuilder();
 		Random random = new Random();
@@ -164,11 +195,11 @@ public class MemberServiceImpl implements MemberService {
         
         //用字符数组的方式随机
   		StringBuilder inviteCode = new StringBuilder();
-  		String model = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  		String model = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
   		char[] m = model.toCharArray();
   		
   		for(int i=0; i<6; i++ ) {
-  			char c = m[(int)(Math.random() * 26)];
+  			char c = m[(int)(Math.random() * 35)];
   			inviteCode.append(c);
   		}
   		
@@ -176,7 +207,7 @@ public class MemberServiceImpl implements MemberService {
   		while (exit != null) {
   			inviteCode.delete(0, inviteCode.length());
   			for(int i=0; i<6; i++ ) {
-  				char c = m[(int)(Math.random() * 26)];
+  				char c = m[(int)(Math.random() * 35)];
   				inviteCode.append(c);
   			}
   			
@@ -202,16 +233,28 @@ public class MemberServiceImpl implements MemberService {
     		teamLevelMapper.insert(teamLevel);
     		//保存团队层级关系表----end
     		
+    		//写入邀请统计处理队列表
+			InviteStatisticsHandleQueue inviteStatisticsHandleQueue = new InviteStatisticsHandleQueue();
+			inviteStatisticsHandleQueue.setMemberId(member.getId());
+			inviteStatisticsHandleQueue.setHandleStatus(LightningConstant.HANDLE_STATUS_NO); //处理状态: 0->未处理; 1->已处理
+			inviteStatisticsHandleQueue.setCreateTime(currentDate);
+			inviteStatisticsHandleQueueMapper.insert(inviteStatisticsHandleQueue);
+    		
         }
         
-        //更新会员信息
-        memberMapper.updateByPrimaryKey(member);
+        //初始化会员统计信息表
+        MemberStatistics memberStatistics = new MemberStatistics();
+        memberStatistics.setMemberId(member.getId());
+        memberStatistics.setInviteCount(0);
+        memberStatistics.setTeamCount(0);
+        memberStatisticsMapper.insert(memberStatistics);
         
         String token = jwtTokenUtil.generateToken(member.getPhone());
         
         LoginVo loginVo = new LoginVo();
         loginVo.setToken(token);
         loginVo.setTokenHead(tokenHead);
+        loginVo.setAlipayBindingStatus("0");
         
         return CommonResult.success(loginVo);
         
@@ -221,12 +264,12 @@ public class MemberServiceImpl implements MemberService {
     public CommonResult<LoginVo> login(LoginDto requestDto) {
     	
     	//判断输入参数是否为空
-    	if(StringUtils.isEmpty(requestDto.getPhone()) ||
+    	if(StringUtils.isEmpty(requestDto.getAccount()) ||
     			StringUtils.isEmpty(requestDto.getPassword())) {
     		return CommonResult.failed(LightningConstant.SERVER_ERROR);
     	}
     	
-    	Member member = portalMemberMapper.selectMemberByPhone(requestDto.getPhone());
+    	Member member = portalMemberMapper.selectMemberByAccount(requestDto.getAccount());
     	
     	if(member == null) {
     		return CommonResult.failed("用户名或密码错误");
@@ -245,6 +288,12 @@ public class MemberServiceImpl implements MemberService {
     	LoginVo loginVo = new LoginVo();
         loginVo.setToken(token);
         loginVo.setTokenHead(tokenHead);
+        
+        if(StringUtils.isEmpty(member.getAvatarUrl())) {
+        	loginVo.setAlipayBindingStatus("0");
+        } else {
+        	loginVo.setAlipayBindingStatus("1");
+        }
          
         return CommonResult.success(loginVo);
     	
@@ -312,22 +361,46 @@ public class MemberServiceImpl implements MemberService {
 	}
     
     @Override
-    public CommonResult<String> getAuthCode(String phone) {
+    public CommonResult<String> getAuthCode(AuthCodeDto requestDto) {
+    	
+    	String receiver = requestDto.getReceiver();
+    	Integer verifyType = requestDto.getVerifyType();
+    	if(StringUtils.isEmpty(receiver) || verifyType == null) {
+    		return CommonResult.failed(LightningConstant.SERVER_ERROR);
+    	}
+    	
+    	if(!RegexpUtils.checkPhone(receiver)) {
+    		return CommonResult.failed("手机号格式错误");
+    	}
+    	
+    	Member member = portalMemberMapper.selectMemberByAccount(receiver);
+    	if(LightningConstant.VERIFY_TYPE_REGISTER.equals(verifyType)) {
+    		if(member != null) {
+    			return CommonResult.failed("用户已存在，请直接登录");
+    		}
+    	} else if(LightningConstant.VERIFY_TYPE_EDIT_PW.equals(verifyType)
+    			|| LightningConstant.VERIFY_TYPE_FORGET_PW.equals(verifyType)) {
+    		if(member == null) {
+    			return CommonResult.failed("用户不存在");
+    		}
+    	} else {
+    		return CommonResult.failed(LightningConstant.SERVER_ERROR);
+    	}
     	
     	//查询1分钟内发送的短信
-    	List<SmsCode> list = portalMapper.selectSmsCodeByPhoneAndMinute(phone, 1);
+    	List<VerificationCode> list = portalMapper.selectVerificationCodeByReceiverAndMinute(receiver, 1);
     	if(!list.isEmpty()) {
     		return CommonResult.failed("操作频繁，请稍后再试");
     	}
     	
-    	//查询30分钟内发送的短信
-    	list = portalMapper.selectSmsCodeByPhoneAndMinute(phone, 30);
-    	if(list.size() >= 5) {
+    	//查询60分钟内发送的短信
+    	list = portalMapper.selectVerificationCodeByReceiverAndMinute(receiver, 60);
+    	if(list.size() >= 3) {
     		return CommonResult.failed("操作频繁，请稍后再试");
     	}
     	
     	//查询1天内发送的短信
-    	list = portalMapper.selectSmsCodeByPhoneAndMinute(phone, 24 * 60);
+    	list = portalMapper.selectVerificationCodeByReceiverAndMinute(receiver, 24 * 60);
     	if(list.size() >= 10) {
     		return CommonResult.failed("操作频繁，请稍后再试");
     	}
@@ -348,15 +421,17 @@ public class MemberServiceImpl implements MemberService {
 			return CommonResult.failed("获取验证码失败，请稍后再试");
 		}
         
-        SmsCode smsCode = new SmsCode();
-        smsCode.setPhone(phone);
-        smsCode.setContent(code.toString());
-        smsCode.setCreateTime(new Date());
-        smsCodeMapper.insert(smsCode);
+        VerificationCode verificationCode = new VerificationCode();
+        verificationCode.setReceiver(receiver);
+        verificationCode.setReceiverType(LightningConstant.RECEIVER_TYPE_PHONE);
+        verificationCode.setVerifyType(verifyType);
+        verificationCode.setContent(code.toString());
+        verificationCode.setCreateTime(new Date());
+        verificationCodeMapper.insert(verificationCode);
         
-        redisService.set(REDIS_KEY_PREFIX_AUTH_CODE + phone, code.toString());
-        redisService.expire(REDIS_KEY_PREFIX_AUTH_CODE + phone, AUTH_CODE_EXPIRE_SECONDS);
-        return CommonResult.success(null, "获取验证码成功");
+        redisService.set(REDIS_KEY_PREFIX_AUTH_CODE + receiver, code.toString());
+        redisService.expire(REDIS_KEY_PREFIX_AUTH_CODE + receiver, AUTH_CODE_EXPIRE_SECONDS);
+        return CommonResult.success(code.toString(), "获取验证码成功");
     }
     
 
@@ -382,45 +457,15 @@ public class MemberServiceImpl implements MemberService {
         String realAuthCode = redisService.get(REDIS_KEY_PREFIX_AUTH_CODE + telephone);
         return authCode.equals(realAuthCode);
     }
-    
-	/**
-     * 修改支付密码
-     */
-	@Override
-	public CommonResult<String> modifyPayPassword(ModifyPayPasswordDto requestDto) {
-		//判断输入参数是否为空
-    	if(StringUtils.isEmpty(requestDto.getAuthCode()) ||
-    			StringUtils.isEmpty(requestDto.getPassword()) ||
-    			StringUtils.isEmpty(requestDto.getRePassword())) {
-    		return CommonResult.failed(LightningConstant.SERVER_ERROR);
-    	}
-    	
-    	if(!requestDto.getPassword().equals(requestDto.getRePassword())) {
-    		return CommonResult.failed("两次输入密码不一致");
-    	}
-    	
-    	Member member = memberMapper.selectByPrimaryKey(memberService.getCurrentMember().getId());
-    	
-        //验证验证码
-        if(!verifyAuthCode(requestDto.getAuthCode(), member.getPhone())){
-            return CommonResult.failed("验证码错误");
-        }
-        
-        //md5(md5($str).md5("tbcc"));
-        String payPassword = DigestUtils.md5DigestAsHex(
-				(DigestUtils.md5DigestAsHex(requestDto.getPassword().getBytes()) + 
-  				DigestUtils.md5DigestAsHex("tbcc".getBytes())).getBytes());
-  		
-  		member.setPayPassword(payPassword);
-        memberMapper.updateByPrimaryKey(member);
-		
-		return CommonResult.success(null, "修改成功");
-	}
 
 	@Override
 	public MemberInfoVo getMemberInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		MemberInfoVo memberInfoVo = new MemberInfoVo();
+		Member member = getMemberById(getCurrentMember().getId());
+		BeanUtils.copyProperties(member, memberInfoVo);
+		memberInfoVo.setMemberId(member.getId().toString());
+		
+		return memberInfoVo;
 	}
 
 }

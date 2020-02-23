@@ -8,7 +8,7 @@ import lombok.Data;
 @ApiModel("会员信息")
 public class MemberInfoVo {
 	
-	@ApiModelProperty(value = "会员ID")
+	@ApiModelProperty(value = "会员id")
 	private String memberId;
 	
 	@ApiModelProperty(value = "姓名")
@@ -20,8 +20,8 @@ public class MemberInfoVo {
 	@ApiModelProperty(value = "头像")
 	private String avatarUrl;
 	
-	@ApiModelProperty(value = "手机号码")
-	private String phone;
+	@ApiModelProperty(value = "账号")
+	private String account;
 	
 	@ApiModelProperty(value = "邀请人姓名")
 	private String inviter;
@@ -29,40 +29,28 @@ public class MemberInfoVo {
 	@ApiModelProperty(value = "邀请码")
 	private String inviteCode;
 	
-	@ApiModelProperty(value = "usdt地址")
-	private String usdtAddress;
-	
-	@ApiModelProperty(value = "激活状态: 0->未激活; 1->已激活")
-	private String activeStatus;
+	@ApiModelProperty(value = "会员有效状态: 0->无效; 1->有效")
+	private String effectiveStatus;
 	
 	@ApiModelProperty(value = "帐号启用状态:0->禁用；1->启用")
 	private String status;
 	
-	@ApiModelProperty(value = "身份证号码")
-	private String idCard;
+	@ApiModelProperty(value = "支付宝uid")
+	private String alipayUid;
 	
-	@ApiModelProperty(value = "身份证正面")
-	private String idCardFront;
+	@ApiModelProperty(value = "代理比例")
+	private String agentRatio;
 	
-	@ApiModelProperty(value = "身份证反面")
-	private String idCardBack;
+	@ApiModelProperty(value = "总积分")
+	private String integration;
 	
-	@ApiModelProperty(value = "银行名称")
-	private String bankName;
+	@ApiModelProperty(value = "可用积分")
+	private String availableIntegration;
 	
-	@ApiModelProperty(value = "银行账户名")
-	private String bankAccount;
+	@ApiModelProperty(value = "冻结积分")
+	private String freezeIntegration;
 	
-	@ApiModelProperty(value = "银行卡号")
-	private String bankCardNo;
-	
-	@ApiModelProperty(value = "USDT余额")
-	private String usdt;
-	
-	@ApiModelProperty(value = "EVEpay余额")
-	private String coinOne;
-	
-	@ApiModelProperty(value = "TBCC余额")
-	private String coinTwo;
+	@ApiModelProperty(value = "注册时间")
+	private String createTime;
 	
 }

@@ -14,5 +14,8 @@ public class LoginVo {
 	
 	@ApiModelProperty(value = "token")
 	private String token;
+	
+	@ApiModelProperty(value = "支付宝绑定状态: 0->未绑定; 1->已绑定")
+	private String alipayBindingStatus;
 
 }

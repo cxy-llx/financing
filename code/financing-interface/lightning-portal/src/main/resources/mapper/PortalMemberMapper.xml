@@ -2,28 +2,55 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wulingqi.lightning.portal.mapper.PortalMemberMapper">
     
-	<select id="selectMemberByPhone" resultMap="com.wulingqi.lightning.mapper.MemberMapper.BaseResultMap">
-	    SELECT
+	<select id="selectMemberByAccount" resultMap="com.wulingqi.lightning.mapper.MemberMapper.BaseResultMap">
+	    select
 	        *
-	    FROM
-	        mall_member
-	    WHERE phone = #{phone}
+	    from
+	        br_member
+	    where phone = #{account} or email = #{account} or username = #{account}
 	</select>
 	
 	<select id="selectMemberByInviteCode" resultMap="com.wulingqi.lightning.mapper.MemberMapper.BaseResultMap">
-	    SELECT
+	    select
 	        *
-	    FROM
-	        mall_member
-	    WHERE invite_code = #{inviteCode}
+	    from
+	        br_member
+	    where invite_code = #{inviteCode}
 	</select>
 	
 	<select id="selectTeamLevelByMemberId" resultMap="com.wulingqi.lightning.mapper.TeamLevelMapper.BaseResultMap">
-	    SELECT
+	    select
 	        *
-	    FROM
-	        mall_team_level
-	    WHERE member_id = #{memberId}
+	    from
+	        br_team_level
+	    where member_id = #{memberId}
+	</select>
+	
+	<select id="selectInviteStatisticsHandleQueue" resultMap="com.wulingqi.lightning.mapper.InviteStatisticsHandleQueueMapper.BaseResultMap">
+		select *
+		from br_invite_statistics_handle_queue
+		where handle_status = 0
+		order by create_time asc
+	</select>
+	
+	<select id="selectTeamInviteStatisticsByMemberIdAndStatisticsDate" resultMap="com.wulingqi.lightning.mapper.TeamInviteStatisticsMapper.BaseResultMap">
+		select *
+		from br_team_invite_statistics a
+		where a.member_id = #{memberId}
+		and to_days(a.statistics_date) = to_days(#{statisticsDate})
+	</select>
+	
+	<select id="selectDirectInviteStatisticsByMemberIdAndStatisticsDate" resultMap="com.wulingqi.lightning.mapper.DirectInviteStatisticsMapper.BaseResultMap">
+		select *
+		from br_direct_invite_statistics a
+		where a.member_id = #{memberId}
+		and to_days(a.statistics_date) = to_days(#{statisticsDate})
+	</select>
+	
+	<select id="selectMemberStatisticsByMemberId" resultMap="com.wulingqi.lightning.mapper.MemberStatisticsMapper.BaseResultMap">
+		select *
+		from br_member_statistics a
+		where a.member_id = #{memberId}
 	</select>
 	
 </mapper>

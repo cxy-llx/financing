@@ -4,10 +4,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.wulingqi.lightning.api.CommonResult;
 import com.wulingqi.lightning.model.Member;
+import com.wulingqi.lightning.portal.dto.AuthCodeDto;
 import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
-import com.wulingqi.lightning.portal.dto.ModifyPayPasswordDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
@@ -49,14 +49,9 @@ public interface MemberService {
     CommonResult<String> editPassword(EditPasswordDto requestDto);
     
     /**
-     * 修改支付密码
-     */
-    CommonResult<String> modifyPayPassword(ModifyPayPasswordDto requestDto);
-    
-    /**
      * 生成验证码
      */
-    CommonResult<String> getAuthCode(String phone);
+    CommonResult<String> getAuthCode(AuthCodeDto requestDto);
 
     /**
      * 获取当前登录会员

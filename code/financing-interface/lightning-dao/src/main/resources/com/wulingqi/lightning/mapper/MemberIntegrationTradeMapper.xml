@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.MemberIntegrationTradeMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.MemberIntegrationTrade">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="trade_type" jdbcType="INTEGER" property="tradeType" />
+    <result column="trade_item" jdbcType="INTEGER" property="tradeItem" />
+    <result column="value" jdbcType="VARCHAR" property="value" />
+    <result column="before_value" jdbcType="VARCHAR" property="beforeValue" />
+    <result column="after_value" jdbcType="VARCHAR" property="afterValue" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_member_integration_trade
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.MemberIntegrationTrade">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_member_integration_trade (member_id, trade_type, trade_item, 
+      value, before_value, after_value, 
+      title, note, create_time
+      )
+    values (#{memberId,jdbcType=BIGINT}, #{tradeType,jdbcType=INTEGER}, #{tradeItem,jdbcType=INTEGER}, 
+      #{value,jdbcType=VARCHAR}, #{beforeValue,jdbcType=VARCHAR}, #{afterValue,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.MemberIntegrationTrade">
+    update br_member_integration_trade
+    set member_id = #{memberId,jdbcType=BIGINT},
+      trade_type = #{tradeType,jdbcType=INTEGER},
+      trade_item = #{tradeItem,jdbcType=INTEGER},
+      value = #{value,jdbcType=VARCHAR},
+      before_value = #{beforeValue,jdbcType=VARCHAR},
+      after_value = #{afterValue,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, member_id, trade_type, trade_item, value, before_value, after_value, title, 
+    note, create_time
+    from br_member_integration_trade
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, member_id, trade_type, trade_item, value, before_value, after_value, title, 
+    note, create_time
+    from br_member_integration_trade
+  </select>
+</mapper>
