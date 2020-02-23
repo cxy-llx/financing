@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>wulingqi-lightning</artifactId>
+        <groupId>com.wulingqi.lightning</groupId>
+        <version>1.1</version>
+    </parent>
+
+    <artifactId>lightning-portal</artifactId>
+
+    <properties>
+    </properties>
+
+    <dependencies>
+    	<dependency>
+            <groupId>com.wulingqi.lightning</groupId>
+            <artifactId>lightning-common</artifactId>
+            <version>1.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.wulingqi.lightning</groupId>
+            <artifactId>lightning-dao</artifactId>
+            <version>1.1</version>
+        </dependency>
+        
+        <!--jwt-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+        
+        <dependency>
+          	<groupId>org.bouncycastle</groupId>
+          	<artifactId>bcprov-jdk15on</artifactId>
+          	<version>1.60</version>
+        </dependency>
+        <dependency>
+          	<groupId>commons-codec</groupId>
+          	<artifactId>commons-codec</artifactId>
+        </dependency>
+        
+        <dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>1.3.2</version>
+		</dependency>
+		
+		<!-- 添加Gson依赖 -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		</dependency>
+		
+		<!-- 添加springboot的websocket依赖 -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

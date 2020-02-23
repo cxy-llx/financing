@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.portal.mapper.PortalMapper">
+    
+    <select id="selectAppUpgradeByType" resultMap="com.wulingqi.lightning.mapper.AppUpgradeMapper.BaseResultMap">
+        SELECT
+            *
+        FROM
+            mall_app_upgrade
+        WHERE type = #{type}
+    </select>
+    
+    <select id="selectSmsCodeByPhoneAndMinute" resultMap="com.wulingqi.lightning.mapper.SmsCodeMapper.BaseResultMap">
+        select
+            *
+        from
+            mall_sms_code
+        where phone = #{phone}
+        and create_time >= DATE_SUB(NOW(), INTERVAL #{minute} MINUTE)
+    </select>
+   	
+</mapper>

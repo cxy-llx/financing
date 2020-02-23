@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.MemberMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.Member">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="pay_password" jdbcType="VARCHAR" property="payPassword" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="birthday" jdbcType="DATE" property="birthday" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="job" jdbcType="VARCHAR" property="job" />
+    <result column="source_type" jdbcType="INTEGER" property="sourceType" />
+    <result column="integration" jdbcType="INTEGER" property="integration" />
+    <result column="inviter_id" jdbcType="BIGINT" property="inviterId" />
+    <result column="invite_code" jdbcType="VARCHAR" property="inviteCode" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_member
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.Member">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_member (username, password, pay_password, 
+      nickname, phone, name, 
+      avatar_url, gender, birthday, 
+      city, job, source_type, 
+      integration, inviter_id, invite_code, 
+      status, create_time)
+    values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{payPassword,jdbcType=VARCHAR}, 
+      #{nickname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{avatarUrl,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, #{birthday,jdbcType=DATE}, 
+      #{city,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, #{sourceType,jdbcType=INTEGER}, 
+      #{integration,jdbcType=INTEGER}, #{inviterId,jdbcType=BIGINT}, #{inviteCode,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.Member">
+    update br_member
+    set username = #{username,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      pay_password = #{payPassword,jdbcType=VARCHAR},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=INTEGER},
+      birthday = #{birthday,jdbcType=DATE},
+      city = #{city,jdbcType=VARCHAR},
+      job = #{job,jdbcType=VARCHAR},
+      source_type = #{sourceType,jdbcType=INTEGER},
+      integration = #{integration,jdbcType=INTEGER},
+      inviter_id = #{inviterId,jdbcType=BIGINT},
+      invite_code = #{inviteCode,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, username, password, pay_password, nickname, phone, name, avatar_url, gender, 
+    birthday, city, job, source_type, integration, inviter_id, invite_code, status, create_time
+    from br_member
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, username, password, pay_password, nickname, phone, name, avatar_url, gender, 
+    birthday, city, job, source_type, integration, inviter_id, invite_code, status, create_time
+    from br_member
+  </select>
+</mapper>

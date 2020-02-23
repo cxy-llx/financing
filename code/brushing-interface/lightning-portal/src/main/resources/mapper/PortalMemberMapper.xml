@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.portal.mapper.PortalMemberMapper">
+    
+	<select id="selectMemberByPhone" resultMap="com.wulingqi.lightning.mapper.MemberMapper.BaseResultMap">
+	    SELECT
+	        *
+	    FROM
+	        mall_member
+	    WHERE phone = #{phone}
+	</select>
+	
+	<select id="selectMemberByInviteCode" resultMap="com.wulingqi.lightning.mapper.MemberMapper.BaseResultMap">
+	    SELECT
+	        *
+	    FROM
+	        mall_member
+	    WHERE invite_code = #{inviteCode}
+	</select>
+	
+	<select id="selectTeamLevelByMemberId" resultMap="com.wulingqi.lightning.mapper.TeamLevelMapper.BaseResultMap">
+	    SELECT
+	        *
+	    FROM
+	        mall_team_level
+	    WHERE member_id = #{memberId}
+	</select>
+	
+</mapper>
