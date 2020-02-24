@@ -101,6 +101,17 @@ public class LightningConstant {
      */
     public static final Integer HANDLE_STATUS_YES = 1;
     
+    /**
+     * 处理类型: 0->邀请统计
+     */
+    public static final Integer HANDLE_TYPE_INVITE = 0;
+    
+    /**
+     * 处理类型: 1->分销统计
+     */
+    public static final Integer HANDLE_TYPE_DISTRIBUTION= 1;
+    
+    
     
     //----------------------------------业务字典start------------------------------------//
     

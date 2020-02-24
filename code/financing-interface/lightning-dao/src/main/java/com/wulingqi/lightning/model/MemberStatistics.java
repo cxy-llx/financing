@@ -23,6 +23,21 @@ public class MemberStatistics implements Serializable {
      */
     private Integer teamCount;
 
+    /**
+     * 直接邀请有效会员人数
+     */
+    private Integer inviteEffectiveCount;
+
+    /**
+     * 团队有效会员人数
+     */
+    private Integer teamEffectiveCount;
+
+    /**
+     * 累计代理收益
+     */
+    private String agentIncome;
+
     private static final long serialVersionUID = 1L;
 
     public Long getId() {
@@ -57,6 +72,30 @@ public class MemberStatistics implements Serializable {
         this.teamCount = teamCount;
     }
 
+    public Integer getInviteEffectiveCount() {
+        return inviteEffectiveCount;
+    }
+
+    public void setInviteEffectiveCount(Integer inviteEffectiveCount) {
+        this.inviteEffectiveCount = inviteEffectiveCount;
+    }
+
+    public Integer getTeamEffectiveCount() {
+        return teamEffectiveCount;
+    }
+
+    public void setTeamEffectiveCount(Integer teamEffectiveCount) {
+        this.teamEffectiveCount = teamEffectiveCount;
+    }
+
+    public String getAgentIncome() {
+        return agentIncome;
+    }
+
+    public void setAgentIncome(String agentIncome) {
+        this.agentIncome = agentIncome;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -67,6 +106,9 @@ public class MemberStatistics implements Serializable {
         sb.append(", memberId=").append(memberId);
         sb.append(", inviteCount=").append(inviteCount);
         sb.append(", teamCount=").append(teamCount);
+        sb.append(", inviteEffectiveCount=").append(inviteEffectiveCount);
+        sb.append(", teamEffectiveCount=").append(teamEffectiveCount);
+        sb.append(", agentIncome=").append(agentIncome);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

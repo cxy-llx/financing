@@ -17,15 +17,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
 import com.wulingqi.lightning.api.CommonResult;
-import com.wulingqi.lightning.mapper.InviteStatisticsHandleQueueMapper;
 import com.wulingqi.lightning.mapper.MemberMapper;
 import com.wulingqi.lightning.mapper.MemberStatisticsMapper;
+import com.wulingqi.lightning.mapper.StatisticsHandleQueueMapper;
 import com.wulingqi.lightning.mapper.TeamLevelMapper;
 import com.wulingqi.lightning.mapper.VerificationCodeMapper;
-import com.wulingqi.lightning.model.InviteStatisticsHandleQueue;
 import com.wulingqi.lightning.model.Member;
 import com.wulingqi.lightning.model.MemberStatistics;
+import com.wulingqi.lightning.model.StatisticsHandleQueue;
 import com.wulingqi.lightning.model.TeamLevel;
 import com.wulingqi.lightning.model.VerificationCode;
 import com.wulingqi.lightning.portal.domain.MemberDetails;
@@ -34,6 +35,7 @@ import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
+import com.wulingqi.lightning.portal.dto.TeamInfoDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMemberMapper;
 import com.wulingqi.lightning.portal.service.CommonService;
@@ -43,6 +45,8 @@ import com.wulingqi.lightning.portal.util.JwtTokenUtil;
 import com.wulingqi.lightning.portal.util.RegexpUtils;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
+import com.wulingqi.lightning.portal.vo.TeamInfoVo;
+import com.wulingqi.lightning.portal.vo.TeamListVo;
 import com.wulingqi.lightning.utils.LightningConstant;
 import com.wulingqi.lightning.utils.StringUtils;
 
@@ -91,7 +95,7 @@ public class MemberServiceImpl implements MemberService {
     private MemberStatisticsMapper memberStatisticsMapper;
     
     @Autowired
-    private InviteStatisticsHandleQueueMapper inviteStatisticsHandleQueueMapper;
+    private StatisticsHandleQueueMapper statisticsHandleQueueMapper;
     
     @Value("${jwt.tokenHead}")
     private String tokenHead;
@@ -145,6 +149,11 @@ public class MemberServiceImpl implements MemberService {
             if(inviter == null) {
             	return CommonResult.failed("邀请码不存在");
             } else {
+            	
+            	if(LightningConstant.STATUS_DISABLE.equals(inviter.getStatus())) {
+            		return CommonResult.failed("邀请人已被封号");
+            	}
+            	
             	/**
             	 * 判断代理比例是否在邀请人分享时设置的范围
             	 * 代理比例必须小于等于邀请人的代理比例并且不能小于等于0
@@ -226,17 +235,18 @@ public class MemberServiceImpl implements MemberService {
     		if(inviterTeamLevel == null || StringUtils.isEmpty(inviterTeamLevel.getAllParentId())) {
     			teamLevel.setAllParentId("/" + inviter.getId() + "/");
     		} else {
-    			teamLevel.setAllParentId(inviterTeamLevel.getAllParentId() + inviter.getId() + "/");
+    			teamLevel.setAllParentId("/"  + inviter.getId() +  inviterTeamLevel.getAllParentId());
     		}
     		teamLevelMapper.insert(teamLevel);
     		//保存团队层级关系表----end
     		
     		//写入邀请统计处理队列表
-			InviteStatisticsHandleQueue inviteStatisticsHandleQueue = new InviteStatisticsHandleQueue();
-			inviteStatisticsHandleQueue.setMemberId(member.getId());
-			inviteStatisticsHandleQueue.setHandleStatus(LightningConstant.HANDLE_STATUS_NO); //处理状态: 0->未处理; 1->已处理
-			inviteStatisticsHandleQueue.setCreateTime(currentDate);
-			inviteStatisticsHandleQueueMapper.insert(inviteStatisticsHandleQueue);
+			StatisticsHandleQueue statisticsHandleQueue = new StatisticsHandleQueue();
+			statisticsHandleQueue.setMemberId(member.getId());
+			statisticsHandleQueue.setHandleType(LightningConstant.HANDLE_TYPE_INVITE); //处理类型: 0->邀请统计
+			statisticsHandleQueue.setHandleStatus(LightningConstant.HANDLE_STATUS_NO); //处理状态: 0->未处理
+			statisticsHandleQueue.setCreateTime(currentDate);
+			statisticsHandleQueueMapper.insert(statisticsHandleQueue);
     		
         }
         
@@ -245,6 +255,9 @@ public class MemberServiceImpl implements MemberService {
         memberStatistics.setMemberId(member.getId());
         memberStatistics.setInviteCount(0);
         memberStatistics.setTeamCount(0);
+        memberStatistics.setInviteEffectiveCount(0);
+        memberStatistics.setTeamEffectiveCount(0);
+        memberStatistics.setAgentIncome("0.00");
         memberStatisticsMapper.insert(memberStatistics);
         
         String token = jwtTokenUtil.generateToken(member.getPhone());
@@ -486,6 +499,45 @@ public class MemberServiceImpl implements MemberService {
 		memberInfoVo.setCreateTime(df.format(member.getCreateTime()));
 		
 		return memberInfoVo;
+	}
+	
+	/**
+     * 获取我的团队信息
+     */
+	@Override
+	public CommonResult<TeamInfoVo> getTeamInfo(TeamInfoDto requestDto) {
+		
+		Long memberId = getCurrentMember().getId();
+		if(!StringUtils.isEmpty(requestDto.getPhone())) {
+			Member lowerMember = portalMemberMapper.selectMemberByPhone(requestDto.getPhone());
+			if(lowerMember != null) {
+				String tempStr = "/"+ memberId +"/";
+				TeamLevel teamLevel = portalMemberMapper.selectTeamLevelByMemberId(lowerMember.getId());
+				if(teamLevel.getAllParentId().contains(tempStr)) {
+					memberId = lowerMember.getId();
+				}
+			}
+		}
+		
+		Member member = getMemberById(memberId);
+		
+		TeamInfoVo teamInfoVo = new TeamInfoVo();
+		
+		MemberStatistics memberStatistics = portalMemberMapper.selectMemberStatisticsByMemberId(memberId);
+		
+		teamInfoVo.setShareCount(String.valueOf(memberStatistics.getInviteCount()));
+		teamInfoVo.setTeamCount(String.valueOf(memberStatistics.getTeamCount()));
+		teamInfoVo.setShareEffectiveCount(String.valueOf(memberStatistics.getInviteEffectiveCount()));
+		teamInfoVo.setTeamEffectiveCount(String.valueOf(memberStatistics.getTeamEffectiveCount()));
+		teamInfoVo.setAvatarUrl(member.getAvatarUrl());
+		teamInfoVo.setTotalIncome(memberStatistics.getAgentIncome());
+		
+		PageHelper.startPage(requestDto.getPage(), requestDto.getLimit());
+		List<TeamListVo> result = portalMemberMapper.selectMemberTeamList(memberId);
+		
+		teamInfoVo.setTeamList(result);
+		
+		return CommonResult.success(teamInfoVo);
 	}
 
 }

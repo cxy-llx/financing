@@ -9,8 +9,10 @@ import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
+import com.wulingqi.lightning.portal.dto.TeamInfoDto;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
+import com.wulingqi.lightning.portal.vo.TeamInfoVo;
 
 /**
  * 会员管理Service
@@ -59,4 +61,9 @@ public interface MemberService {
     Member getCurrentMember();
 
     MemberInfoVo getMemberInfo();
+    
+    /**
+     * 获取我的团队信息
+     */
+    CommonResult<TeamInfoVo> getTeamInfo(TeamInfoDto requestDto);
 }

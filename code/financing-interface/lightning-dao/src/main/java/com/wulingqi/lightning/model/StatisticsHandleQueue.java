@@ -3,7 +3,7 @@ package com.wulingqi.lightning.model;
 import java.io.Serializable;
 import java.util.Date;
 
-public class InviteStatisticsHandleQueue implements Serializable {
+public class StatisticsHandleQueue implements Serializable {
     /**
      * 主键
      */
@@ -13,6 +13,11 @@ public class InviteStatisticsHandleQueue implements Serializable {
      * 会员id
      */
     private Long memberId;
+
+    /**
+     * 处理类型: 0->邀请统计; 1->分销统计
+     */
+    private Integer handleType;
 
     /**
      * 处理状态: 0->未处理; 1->已处理
@@ -47,6 +52,14 @@ public class InviteStatisticsHandleQueue implements Serializable {
         this.memberId = memberId;
     }
 
+    public Integer getHandleType() {
+        return handleType;
+    }
+
+    public void setHandleType(Integer handleType) {
+        this.handleType = handleType;
+    }
+
     public Integer getHandleStatus() {
         return handleStatus;
     }
@@ -79,6 +92,7 @@ public class InviteStatisticsHandleQueue implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
         sb.append(", memberId=").append(memberId);
+        sb.append(", handleType=").append(handleType);
         sb.append(", handleStatus=").append(handleStatus);
         sb.append(", updateTime=").append(updateTime);
         sb.append(", createTime=").append(createTime);

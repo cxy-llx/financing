@@ -10,6 +10,14 @@
 	    where phone = #{account} or email = #{account} or username = #{account}
 	</select>
 	
+	<select id="selectMemberByPhone" resultMap="com.wulingqi.lightning.mapper.MemberMapper.BaseResultMap">
+	    select
+	        *
+	    from
+	        br_member
+	    where phone = #{phone}
+	</select>
+	
 	<select id="selectMemberByInviteCode" resultMap="com.wulingqi.lightning.mapper.MemberMapper.BaseResultMap">
 	    select
 	        *
@@ -26,9 +34,9 @@
 	    where member_id = #{memberId}
 	</select>
 	
-	<select id="selectInviteStatisticsHandleQueue" resultMap="com.wulingqi.lightning.mapper.InviteStatisticsHandleQueueMapper.BaseResultMap">
+	<select id="selectStatisticsHandleQueue" resultMap="com.wulingqi.lightning.mapper.InviteStatisticsHandleQueueMapper.BaseResultMap">
 		select *
-		from br_invite_statistics_handle_queue
+		from br_statistics_handle_queue
 		where handle_status = 0
 		order by create_time asc
 	</select>
@@ -51,6 +59,26 @@
 		select *
 		from br_member_statistics a
 		where a.member_id = #{memberId}
+	</select>
+	
+	<select id="selectMemberTeamList" resultType="com.wulingqi.lightning.portal.vo.TeamListVo">
+	    select
+	    	a.id as memberId,
+	    	a.phone,
+	        a.nickname,
+	        a.effective_status as effectiveStatus,
+	        a.avatar_url as avatarUrl,
+	        a.agent_ratio as agentRatio,
+	        b.invite_count as shareCount,
+	        b.team_count as teamCount,
+	        b.invite_effective_count as shareEffectiveCount,
+	        b.team_effective_count as teamEffectiveCount,
+	        b.agent_income as totalIncome,
+	        date_format(a.create_time, '%Y-%m-%d %H:%i') as registerTime
+	    from
+	        br_member a
+	    left join br_member_statistics b on a.id = b.member_id
+	    where inviter_id = #{memberId}
 	</select>
 	
 </mapper>

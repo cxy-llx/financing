@@ -6,6 +6,9 @@
     <result column="member_id" jdbcType="BIGINT" property="memberId" />
     <result column="invite_count" jdbcType="INTEGER" property="inviteCount" />
     <result column="team_count" jdbcType="INTEGER" property="teamCount" />
+    <result column="invite_effective_count" jdbcType="INTEGER" property="inviteEffectiveCount" />
+    <result column="team_effective_count" jdbcType="INTEGER" property="teamEffectiveCount" />
+    <result column="agent_income" jdbcType="VARCHAR" property="agentIncome" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from br_member_statistics
@@ -15,25 +18,32 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into br_member_statistics (member_id, invite_count, team_count
-      )
-    values (#{memberId,jdbcType=BIGINT}, #{inviteCount,jdbcType=INTEGER}, #{teamCount,jdbcType=INTEGER}
-      )
+    insert into br_member_statistics (member_id, invite_count, team_count, 
+      invite_effective_count, team_effective_count, 
+      agent_income)
+    values (#{memberId,jdbcType=BIGINT}, #{inviteCount,jdbcType=INTEGER}, #{teamCount,jdbcType=INTEGER}, 
+      #{inviteEffectiveCount,jdbcType=INTEGER}, #{teamEffectiveCount,jdbcType=INTEGER}, 
+      #{agentIncome,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.MemberStatistics">
     update br_member_statistics
     set member_id = #{memberId,jdbcType=BIGINT},
       invite_count = #{inviteCount,jdbcType=INTEGER},
-      team_count = #{teamCount,jdbcType=INTEGER}
+      team_count = #{teamCount,jdbcType=INTEGER},
+      invite_effective_count = #{inviteEffectiveCount,jdbcType=INTEGER},
+      team_effective_count = #{teamEffectiveCount,jdbcType=INTEGER},
+      agent_income = #{agentIncome,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, member_id, invite_count, team_count
+    select id, member_id, invite_count, team_count, invite_effective_count, team_effective_count, 
+    agent_income
     from br_member_statistics
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, member_id, invite_count, team_count
+    select id, member_id, invite_count, team_count, invite_effective_count, team_effective_count, 
+    agent_income
     from br_member_statistics
   </select>
 </mapper>

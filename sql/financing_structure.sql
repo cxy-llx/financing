@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `br_merchant` (
   `phone` varchar(64) DEFAULT NULL COMMENT '手机号码',
   `avatar_url` varchar(500) DEFAULT NULL COMMENT '头像',
   `mch_id` varchar(20) DEFAULT NULL COMMENT '商户id',
-  `mch_key` varchar(32) DEFAULT NULL COMMENT '商户秘钥',
+  `mch_key` varchar(255) DEFAULT NULL COMMENT '商户秘钥',
   `balance` varchar(32) DEFAULT NULL COMMENT '余额',
   `freeze_balance` varchar(32) DEFAULT NULL COMMENT '冻结余额',
   `settlement_rate` varchar(6) DEFAULT NULL COMMENT '结算费率',
@@ -196,23 +196,15 @@ CREATE TABLE IF NOT EXISTS `br_offline_recharge_record` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='线下充值记录表';
 
 
-DROP TABLE IF EXISTS `br_effective_member_statistics`;
-CREATE TABLE IF NOT EXISTS `br_effective_member_statistics` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
-  `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
-  `invite_count` int(11) DEFAULT 0 COMMENT '直接邀请有效会员人数',
-  `team_count` int(11) DEFAULT 0 COMMENT '团队有效会员人数',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_member_id` (`member_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='有效会员统计信息表';
-
-
 DROP TABLE IF EXISTS `br_member_statistics`;
 CREATE TABLE IF NOT EXISTS `br_member_statistics` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
   `invite_count` int(11) DEFAULT 0 COMMENT '邀请人数',
   `team_count` int(11) DEFAULT 0 COMMENT '团队人数',
+  `invite_effective_count` int(11) DEFAULT 0 COMMENT '直接邀请有效会员人数',
+  `team_effective_count` int(11) DEFAULT 0 COMMENT '团队有效会员人数',
+  `agent_income` varchar(32) DEFAULT NULL COMMENT '累计代理收益',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_member_id` (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员统计信息表';
@@ -240,16 +232,17 @@ CREATE TABLE IF NOT EXISTS `br_direct_invite_statistics` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员直接邀请统计信息表';
 
 
-DROP TABLE IF EXISTS `br_invite_statistics_handle_queue`;
-CREATE TABLE `br_invite_statistics_handle_queue` (
+DROP TABLE IF EXISTS `br_statistics_handle_queue`;
+CREATE TABLE `br_statistics_handle_queue` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
-  `handle_status` int(1) DEFAULT NULL COMMENT '处理状态: 0->未处理; 1->已处理',
+  `handle_type` int(1) DEFAULT 0 COMMENT '处理类型: 0->邀请统计; 1->分销统计',
+  `handle_status` int(1) DEFAULT 0 COMMENT '处理状态: 0->未处理; 1->已处理',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_member_id` (`member_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员邀请统计处理队列表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员统计处理队列表';
 
 
 DROP TABLE IF EXISTS `br_general_data`;

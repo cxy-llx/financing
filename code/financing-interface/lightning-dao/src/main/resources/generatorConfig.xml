@@ -176,24 +176,6 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
-        <table tableName="br_member_statistics" domainObjectName="MemberStatistics" 
-			enableCountByExample="false"
-			enableUpdateByExample="false"
-			enableDeleteByExample="false"
-			enableSelectByExample="false"
-			selectByExampleQueryId="false" >
-            <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
-        
-        <table tableName="br_invite_statistics_handle_queue" domainObjectName="InviteStatisticsHandleQueue" 
-			enableCountByExample="false"
-			enableUpdateByExample="false"
-			enableDeleteByExample="false"
-			enableSelectByExample="false"
-			selectByExampleQueryId="false" >
-            <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
-        
         <table tableName="br_member" domainObjectName="Member" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
@@ -202,7 +184,6 @@
 			selectByExampleQueryId="false" >
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
-        -->
         
         <table tableName="br_team_invite_statistics" domainObjectName="TeamInviteStatistics" 
 			enableCountByExample="false"
@@ -221,6 +202,27 @@
 			selectByExampleQueryId="false" >
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
+        
+        <table tableName="br_member_statistics" domainObjectName="MemberStatistics" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        -->
+        
+        <table tableName="br_statistics_handle_queue" domainObjectName="StatisticsHandleQueue" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
         
         
         

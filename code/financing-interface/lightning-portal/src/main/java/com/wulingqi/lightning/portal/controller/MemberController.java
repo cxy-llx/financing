@@ -12,9 +12,11 @@ import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
+import com.wulingqi.lightning.portal.dto.TeamInfoDto;
 import com.wulingqi.lightning.portal.service.MemberService;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
+import com.wulingqi.lightning.portal.vo.TeamInfoVo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,6 +67,12 @@ public class MemberController {
     public CommonResult<MemberInfoVo> getMemberInfo() {
 		MemberInfoVo result = memberService.getMemberInfo();
         return CommonResult.success(result);
+    }
+    
+    @ApiOperation(value = "获取我的团队信息")
+    @RequestMapping(value = "/getTeamInfo", method = RequestMethod.POST)
+    public CommonResult<TeamInfoVo> getTeamInfo(@RequestBody TeamInfoDto requestDto) {
+        return memberService.getTeamInfo(requestDto);
     }
 
 }
