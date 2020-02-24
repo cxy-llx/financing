@@ -1,5 +1,6 @@
 package com.wulingqi.lightning.portal.mapper;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,8 @@ import com.wulingqi.lightning.model.MemberStatistics;
 import com.wulingqi.lightning.model.StatisticsHandleQueue;
 import com.wulingqi.lightning.model.TeamInviteStatistics;
 import com.wulingqi.lightning.model.TeamLevel;
+import com.wulingqi.lightning.portal.vo.IntegrationDetailListVo;
+import com.wulingqi.lightning.portal.vo.RechargeDetailListVo;
 import com.wulingqi.lightning.portal.vo.TeamListVo;
 
 public interface PortalMemberMapper {
@@ -34,5 +37,17 @@ public interface PortalMemberMapper {
 	List<TeamListVo> selectMemberTeamList(@Param("memberId") Long memberId);
 	
 	int updateMemberByPrimaryKey(Member record);
+	
+	BigDecimal selectMemberTotalRecharge(@Param("memberId") Long memberId);
+	
+	BigDecimal selectMemberRechargeByRechargeStatus(@Param("memberId") Long memberId, @Param("rechargeStatus") Integer rechargeStatus);
+	
+	List<RechargeDetailListVo> selectMemberRechargeDetail(@Param("memberId") Long memberId);
+	
+	BigDecimal selectMemberTotalIncome(@Param("memberId") Long memberId);
+	
+	BigDecimal selectMemberTotalExpend(@Param("memberId") Long memberId);
+	
+	List<IntegrationDetailListVo> selectMemberIntegrationDetail(@Param("memberId") Long memberId);
 	
 }

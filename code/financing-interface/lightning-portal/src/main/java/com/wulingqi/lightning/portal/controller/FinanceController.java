@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wulingqi.lightning.api.CommonResult;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
 import com.wulingqi.lightning.portal.service.FinanceService;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
+import com.wulingqi.lightning.portal.vo.IntegrationDetailVo;
+import com.wulingqi.lightning.portal.vo.RechargeDetailVo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +36,18 @@ public class FinanceController {
     @RequestMapping(value = "/recharge", method = RequestMethod.POST)
     public CommonResult<String> recharge(@RequestBody RechargeDto requestDto) {
 		return financeService.recharge(requestDto);
+    }
+	
+	@ApiOperation("获取充值明细")
+    @RequestMapping(value = "/getRechargeDetail", method = RequestMethod.POST)
+    public CommonResult<RechargeDetailVo> getRechargeDetail(@RequestBody PageableDto requestDto) {
+		return financeService.getRechargeDetail(requestDto);
+    }
+	
+	@ApiOperation("获取积分明细")
+    @RequestMapping(value = "/getIntegrationDetail", method = RequestMethod.POST)
+    public CommonResult<IntegrationDetailVo> getIntegrationDetail(@RequestBody PageableDto requestDto) {
+		return financeService.getIntegrationDetail(requestDto);
     }
 
 }

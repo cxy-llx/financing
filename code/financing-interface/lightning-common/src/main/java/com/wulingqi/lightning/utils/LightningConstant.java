@@ -141,6 +141,21 @@ public class LightningConstant {
      */
     public static final Integer COLLECTION_TYPE_USDT = 3;
     
+    /**
+     * 充值状态: 0->充值中
+     */
+    public static final Integer RECHARGE_STATUS_RECHARGE = 0;
+    
+    /**
+     * 充值状态: 1->成功
+     */
+    public static final Integer RECHARGE_STATUS_SUCCEED = 1;
+    
+    /**
+     * 充值状态: 2->失败
+     */
+    public static final Integer RECHARGE_STATUS_FAILED = 2;
+    
     
     //----------------------------------业务字典start------------------------------------//
     

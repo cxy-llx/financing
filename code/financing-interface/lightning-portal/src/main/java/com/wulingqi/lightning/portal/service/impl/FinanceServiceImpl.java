@@ -10,12 +10,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.PageHelper;
 import com.wulingqi.lightning.api.CommonResult;
 import com.wulingqi.lightning.mapper.OfflineRechargeRecordMapper;
 import com.wulingqi.lightning.mapper.PlatformCollectionInfoMapper;
+import com.wulingqi.lightning.model.Member;
 import com.wulingqi.lightning.model.OfflineRechargeRecord;
 import com.wulingqi.lightning.model.PlatformCollectionInfo;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMemberMapper;
@@ -23,6 +26,8 @@ import com.wulingqi.lightning.portal.service.CommonService;
 import com.wulingqi.lightning.portal.service.FinanceService;
 import com.wulingqi.lightning.portal.service.MemberService;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
+import com.wulingqi.lightning.portal.vo.IntegrationDetailVo;
+import com.wulingqi.lightning.portal.vo.RechargeDetailVo;
 import com.wulingqi.lightning.utils.LightningConstant;
 import com.wulingqi.lightning.utils.StringUtils;
 
@@ -126,6 +131,43 @@ public class FinanceServiceImpl implements FinanceService {
 		offlineRechargeRecordMapper.insert(rechargeRecord);
 		
 		return CommonResult.success(null, "提交成功");
+	}
+
+	/**
+	 * 获取充值明细
+	 */
+	@Override
+	public CommonResult<RechargeDetailVo> getRechargeDetail(PageableDto requestDto) {
+		Long memberId = memberService.getCurrentMember().getId();
+		
+		RechargeDetailVo result = new RechargeDetailVo();
+		result.setTotal(portalMemberMapper.selectMemberTotalRecharge(memberId).toPlainString());
+		result.setSucceed(portalMemberMapper.selectMemberRechargeByRechargeStatus(memberId, LightningConstant.RECHARGE_STATUS_SUCCEED).toPlainString());
+		result.setAudit(portalMemberMapper.selectMemberRechargeByRechargeStatus(memberId, LightningConstant.RECHARGE_STATUS_RECHARGE).toPlainString());
+		
+		PageHelper.startPage(requestDto.getPage(), requestDto.getLimit());
+		
+		result.setList(portalMemberMapper.selectMemberRechargeDetail(memberId));
+		
+		return CommonResult.success(result);
+	}
+
+	/**
+	 * 获取积分明细
+	 */
+	@Override
+	public CommonResult<IntegrationDetailVo> getIntegrationDetail(PageableDto requestDto) {
+		
+		Long memberId = memberService.getCurrentMember().getId();
+		Member member = memberService.getMemberById(memberId);
+		
+		IntegrationDetailVo result = new IntegrationDetailVo();
+		result.setIntegration(member.getIntegration());
+		result.setFreezeIntegration(member.getFreezeIntegration());
+		result.setIncome(portalMemberMapper.selectMemberTotalIncome(memberId).toPlainString());
+		result.setExpend(portalMemberMapper.selectMemberTotalExpend(memberId).toPlainString());
+		
+		return CommonResult.success(result);
 	}
 
 }

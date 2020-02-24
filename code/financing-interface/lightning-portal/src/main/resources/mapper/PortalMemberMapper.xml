@@ -108,4 +108,60 @@
 	    and version = #{version,jdbcType=BIGINT}
 	</update>
 	
+	<select id="selectMemberTotalRecharge" resultType="java.math.BigDecimal">
+		select ifnull(sum(convert(a.value, decimal(30,2))), 0)
+		from br_offline_recharge_record a
+		where a.member_id = #{memberId}
+	</select>
+	
+	<select id="selectMemberRechargeByRechargeStatus" resultType="java.math.BigDecimal">
+		select ifnull(sum(convert(a.value, decimal(30,2))), 0)
+		from br_offline_recharge_record a
+		where a.member_id = #{memberId}
+		and a.recharge_status = #{rechargeStatus}
+	</select>
+	
+	<select id="selectMemberRechargeDetail" resultType="com.wulingqi.lightning.portal.vo.RechargeDetailListVo">
+		select
+			a.recharge_type as rechargeType,
+			a.value,
+			a.recharge_status as rechargeStatus,
+			case a.recharge_status
+				when 0 then '审核中'
+			   	when 1 then '已完成'
+			   	else '失败'
+			end as rechargeStatusName,
+			date_format(a.recharge_time,'%Y-%m-%d %H:%i') as auditTime,
+			date_format(a.create_time,'%Y-%m-%d %H:%i') as createTime
+		from br_offline_recharge_record a
+		where a.member_id = #{memberId}
+		order by a.create_time desc
+	</select>
+	
+	<select id="selectMemberTotalIncome" resultType="java.math.BigDecimal">
+		select ifnull(sum(convert(a.value, decimal(30,2))), 0)
+		from br_member_integration_trade a
+		where a.member_id = #{memberId}
+		and a.trade_type = 0
+	</select>
+	
+	<select id="selectMemberTotalExpend" resultType="java.math.BigDecimal">
+		select ifnull(sum(convert(a.value, decimal(30,2))), 0)
+		from br_member_integration_trade a
+		where a.member_id = #{memberId}
+		and a.trade_type = 1
+	</select>
+	
+	<select id="selectMemberIntegrationDetail" resultType="com.wulingqi.lightning.portal.vo.IntegrationDetailListVo">
+		select
+			a.trade_type as tradeType,
+			a.value,
+			a.title,
+			a.note,
+			date_format(a.create_time,'%Y-%m-%d %H:%i') as createTime
+		from br_member_integration_trade a
+		where a.member_id = #{memberId}
+		order by a.create_time desc
+	</select>
+	
 </mapper>
