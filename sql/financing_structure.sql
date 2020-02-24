@@ -121,6 +121,8 @@ CREATE TABLE IF NOT EXISTS `br_member` (
   `invite_code` varchar(6) DEFAULT NULL COMMENT '邀请码',
   `effective_status` int(1) DEFAULT 0 COMMENT '有效会员状态: 0->无效; 1->有效',
   `status` int(1) DEFAULT NULL COMMENT '帐号启用状态:0->禁用；1->启用',
+  `login_time` datetime DEFAULT NULL COMMENT '最后登录时间',
+  `login_ip` varchar(64) DEFAULT NULL COMMENT '最后登录IP',
   `create_time` datetime DEFAULT NULL COMMENT '注册时间',
   `version` bigint(20) NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
   PRIMARY KEY (`id`),

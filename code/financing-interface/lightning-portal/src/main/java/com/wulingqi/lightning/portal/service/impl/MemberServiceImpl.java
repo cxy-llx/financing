@@ -31,11 +31,14 @@ import com.wulingqi.lightning.model.TeamLevel;
 import com.wulingqi.lightning.model.VerificationCode;
 import com.wulingqi.lightning.portal.domain.MemberDetails;
 import com.wulingqi.lightning.portal.dto.AuthCodeDto;
+import com.wulingqi.lightning.portal.dto.CompleteInfoDto;
 import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
 import com.wulingqi.lightning.portal.dto.TeamInfoDto;
+import com.wulingqi.lightning.portal.dto.UpdateAvatarUrlDto;
+import com.wulingqi.lightning.portal.dto.UpdateNicknameDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMemberMapper;
 import com.wulingqi.lightning.portal.service.CommonService;
@@ -47,7 +50,9 @@ import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
 import com.wulingqi.lightning.portal.vo.TeamInfoVo;
 import com.wulingqi.lightning.portal.vo.TeamListVo;
+import com.wulingqi.lightning.utils.IPUtil;
 import com.wulingqi.lightning.utils.LightningConstant;
+import com.wulingqi.lightning.utils.RequestHolder;
 import com.wulingqi.lightning.utils.StringUtils;
 
 /**
@@ -220,7 +225,12 @@ public class MemberServiceImpl implements MemberService {
   			
   			exit = portalMemberMapper.selectMemberByInviteCode(inviteCode.toString());
   		}
+  		
   		member.setInviteCode(inviteCode.toString());
+  		
+  		member.setLoginIp(IPUtil.getIpAddress(RequestHolder.getHttpServletRequest()));
+  		member.setLoginTime(currentDate);
+  		
         memberMapper.insert(member);
         
         //保存团队层级关系表
@@ -294,6 +304,13 @@ public class MemberServiceImpl implements MemberService {
     		return CommonResult.failed("账号已被冻结");
     	}
         
+    	member.setLoginIp(IPUtil.getIpAddress(RequestHolder.getHttpServletRequest()));
+  		member.setLoginTime(new Date());
+  		int count = portalMemberMapper.updateMemberByPrimaryKey(member);
+  		if(count != 1) {
+  			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+  		}
+    	
     	String token = jwtTokenUtil.generateToken(member.getPhone());
     	
     	LoginVo loginVo = new LoginVo();
@@ -339,7 +356,10 @@ public class MemberServiceImpl implements MemberService {
         }
         
         member.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        memberMapper.updateByPrimaryKey(member);
+        int count = portalMemberMapper.updateMemberByPrimaryKey(member);
+  		if(count != 1) {
+  			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+  		}
 		
 		return CommonResult.success(null, "找回成功");
 	}
@@ -366,7 +386,10 @@ public class MemberServiceImpl implements MemberService {
     	}
     	
     	member.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        memberMapper.updateByPrimaryKey(member);
+    	int count = portalMemberMapper.updateMemberByPrimaryKey(member);
+  		if(count != 1) {
+  			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+  		}
     	
     	return CommonResult.success(null, "修改成功");
 	}
@@ -538,6 +561,68 @@ public class MemberServiceImpl implements MemberService {
 		teamInfoVo.setTeamList(result);
 		
 		return CommonResult.success(teamInfoVo);
+	}
+
+	/**
+     * 完善资料信息
+     */
+	@Override
+	public CommonResult<String> completeInfo(CompleteInfoDto requestDto) {
+		
+		if(StringUtils.isEmpty(requestDto.getAlipayUid())) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		Member member = getMemberById(getCurrentMember().getId());
+		if(!StringUtils.isEmpty(member.getAlipayUid())) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		member.setAlipayUid(requestDto.getAlipayUid());
+		
+		int count = portalMemberMapper.updateMemberByPrimaryKey(member);
+  		if(count != 1) {
+  			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+  		}
+		
+		return CommonResult.success(null, "绑定成功");
+	}
+
+	/**
+     * 修改用户昵称
+     */
+	@Override
+	public CommonResult<String> updateNickname(UpdateNicknameDto requestDto) {
+		
+		//获取当前登录用户
+    	Member member = memberMapper.selectByPrimaryKey(getCurrentMember().getId());
+    	if(!StringUtils.isEmpty(requestDto.getNickname())) {
+    		member.setNickname(requestDto.getNickname());
+    		
+    		int count = portalMemberMapper.updateMemberByPrimaryKey(member);
+      		if(count != 1) {
+      			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+      		}
+    		
+    	}
+    	return CommonResult.success(null, "修改成功");
+	}
+
+	/**
+     * 修改用户头像
+     */
+	@Override
+	public CommonResult<String> updateAvatarUrl(UpdateAvatarUrlDto requestDto) {
+		//获取当前登录用户
+    	Member member = memberMapper.selectByPrimaryKey(getCurrentMember().getId());
+    	if(!StringUtils.isEmpty(requestDto.getAvatarUrl())) {
+    		member.setAvatarUrl(requestDto.getAvatarUrl());
+    		int count = portalMemberMapper.updateMemberByPrimaryKey(member);
+      		if(count != 1) {
+      			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+      		}
+    	}
+    	return CommonResult.success(null, "修改成功");
 	}
 
 }

@@ -105,6 +105,16 @@ public class Member implements Serializable {
     private Integer status;
 
     /**
+     * 最后登录时间
+     */
+    private Date loginTime;
+
+    /**
+     * 最后登录IP
+     */
+    private String loginIp;
+
+    /**
      * 注册时间
      */
     private Date createTime;
@@ -276,6 +286,22 @@ public class Member implements Serializable {
         this.status = status;
     }
 
+    public Date getLoginTime() {
+        return loginTime;
+    }
+
+    public void setLoginTime(Date loginTime) {
+        this.loginTime = loginTime;
+    }
+
+    public String getLoginIp() {
+        return loginIp;
+    }
+
+    public void setLoginIp(String loginIp) {
+        this.loginIp = loginIp;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -318,6 +344,8 @@ public class Member implements Serializable {
         sb.append(", inviteCode=").append(inviteCode);
         sb.append(", effectiveStatus=").append(effectiveStatus);
         sb.append(", status=").append(status);
+        sb.append(", loginTime=").append(loginTime);
+        sb.append(", loginIp=").append(loginIp);
         sb.append(", createTime=").append(createTime);
         sb.append(", version=").append(version);
         sb.append(", serialVersionUID=").append(serialVersionUID);

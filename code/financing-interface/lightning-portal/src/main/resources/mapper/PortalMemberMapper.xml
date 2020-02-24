@@ -34,7 +34,7 @@
 	    where member_id = #{memberId}
 	</select>
 	
-	<select id="selectStatisticsHandleQueue" resultMap="com.wulingqi.lightning.mapper.InviteStatisticsHandleQueueMapper.BaseResultMap">
+	<select id="selectStatisticsHandleQueue" resultMap="com.wulingqi.lightning.mapper.StatisticsHandleQueueMapper.BaseResultMap">
 		select *
 		from br_statistics_handle_queue
 		where handle_status = 0
@@ -80,5 +80,32 @@
 	    left join br_member_statistics b on a.id = b.member_id
 	    where inviter_id = #{memberId}
 	</select>
+	
+	<update id="updateMemberByPrimaryKey" parameterType="com.wulingqi.lightning.model.Member">
+	    update br_member
+	    set username = #{username,jdbcType=VARCHAR},
+	      password = #{password,jdbcType=VARCHAR},
+	      nickname = #{nickname,jdbcType=VARCHAR},
+	      phone = #{phone,jdbcType=VARCHAR},
+	      email = #{email,jdbcType=VARCHAR},
+	      name = #{name,jdbcType=VARCHAR},
+	      avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+	      gender = #{gender,jdbcType=INTEGER},
+	      birthday = #{birthday,jdbcType=DATE},
+	      city = #{city,jdbcType=VARCHAR},
+	      job = #{job,jdbcType=VARCHAR},
+	      integration = #{integration,jdbcType=VARCHAR},
+	      freeze_integration = #{freezeIntegration,jdbcType=VARCHAR},
+	      alipay_uid = #{alipayUid,jdbcType=VARCHAR},
+	      agent_ratio = #{agentRatio,jdbcType=VARCHAR},
+	      inviter_id = #{inviterId,jdbcType=BIGINT},
+	      invite_code = #{inviteCode,jdbcType=VARCHAR},
+	      effective_status = #{effectiveStatus,jdbcType=INTEGER},
+	      status = #{status,jdbcType=INTEGER},
+	      create_time = #{createTime,jdbcType=TIMESTAMP},
+	      version = version + 1
+	    where id = #{id,jdbcType=BIGINT}
+	    and version = #{version,jdbcType=BIGINT}
+	</update>
 	
 </mapper>

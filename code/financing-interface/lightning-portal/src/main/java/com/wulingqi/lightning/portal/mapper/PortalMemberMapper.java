@@ -33,4 +33,6 @@ public interface PortalMemberMapper {
 	
 	List<TeamListVo> selectMemberTeamList(@Param("memberId") Long memberId);
 	
+	int updateMemberByPrimaryKey(Member record);
+	
 }

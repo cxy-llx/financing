@@ -39,6 +39,7 @@ public class WebsocketHeartbeatTask implements CommandLineRunner {
 			HeartbeatVo heartbeat = new HeartbeatVo();
 			for (Map.Entry<String, Session> entry : connections.entrySet()) {
 				if(redisService.get(entry.getKey()) == null) {
+					entry.getValue().close(); //主动断开连接
 					connections.remove(entry.getKey());
 				} else {
 					heartbeat.setPing(String.valueOf(new Date().getTime()));

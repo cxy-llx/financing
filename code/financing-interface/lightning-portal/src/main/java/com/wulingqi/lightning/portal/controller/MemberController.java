@@ -8,11 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wulingqi.lightning.api.CommonResult;
 import com.wulingqi.lightning.portal.dto.AuthCodeDto;
+import com.wulingqi.lightning.portal.dto.CompleteInfoDto;
 import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
 import com.wulingqi.lightning.portal.dto.TeamInfoDto;
+import com.wulingqi.lightning.portal.dto.UpdateAvatarUrlDto;
+import com.wulingqi.lightning.portal.dto.UpdateNicknameDto;
 import com.wulingqi.lightning.portal.service.MemberService;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
@@ -56,6 +59,20 @@ public class MemberController {
         return memberService.editPassword(requestDto);
     }
     
+    @ApiOperation("修改会员昵称")
+    @RequestMapping(value = "/updateNickname", method = RequestMethod.POST)
+    public CommonResult<String> updateNickname(@RequestBody UpdateNicknameDto requestDto) {
+        memberService.updateNickname(requestDto);
+        return CommonResult.success(null, "修改成功");
+    }
+    
+    @ApiOperation("修改会员头像")
+    @RequestMapping(value = "/updateAvatarUrl", method = RequestMethod.POST)
+    public CommonResult<String> updateAvatarUrl(@RequestBody UpdateAvatarUrlDto requestDto) {
+    	memberService.updateAvatarUrl(requestDto);
+    	return CommonResult.success(null, "修改成功");
+    }
+    
     @ApiOperation("获取验证码")
     @RequestMapping(value = "/getAuthCode", method = RequestMethod.POST)
     public CommonResult<String> getAuthCode(@RequestBody AuthCodeDto requestDto) {
@@ -73,6 +90,12 @@ public class MemberController {
     @RequestMapping(value = "/getTeamInfo", method = RequestMethod.POST)
     public CommonResult<TeamInfoVo> getTeamInfo(@RequestBody TeamInfoDto requestDto) {
         return memberService.getTeamInfo(requestDto);
+    }
+    
+    @ApiOperation(value = "完善资料信息")
+    @RequestMapping(value = "/completeInfo", method = RequestMethod.POST)
+    public CommonResult<String> completeInfo(@RequestBody CompleteInfoDto requestDto) {
+        return memberService.completeInfo(requestDto);
     }
 
 }

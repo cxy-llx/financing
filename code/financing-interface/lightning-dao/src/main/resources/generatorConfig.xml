@@ -158,15 +158,6 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
-        <table tableName="br_member" domainObjectName="Member" 
-			enableCountByExample="false"
-			enableUpdateByExample="false"
-			enableDeleteByExample="false"
-			enableSelectByExample="false"
-			selectByExampleQueryId="false" >
-            <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
-        
         <table tableName="br_team_invite_statistics" domainObjectName="TeamInviteStatistics" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
@@ -203,9 +194,6 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
-        -->
-        
-        
         <table tableName="br_platform_collection_info" domainObjectName="PlatformCollectionInfo" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
@@ -216,6 +204,18 @@
         </table>
         
         <table tableName="br_offline_recharge_record" domainObjectName="OfflineRechargeRecord" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        -->
+        
+        
+        <table tableName="br_member" domainObjectName="Member" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
 			enableDeleteByExample="false"
