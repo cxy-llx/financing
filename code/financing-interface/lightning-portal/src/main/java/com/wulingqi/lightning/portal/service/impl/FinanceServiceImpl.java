@@ -1,17 +1,32 @@
 package com.wulingqi.lightning.portal.service.impl;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.mapper.OfflineRechargeRecordMapper;
+import com.wulingqi.lightning.mapper.PlatformCollectionInfoMapper;
+import com.wulingqi.lightning.model.OfflineRechargeRecord;
+import com.wulingqi.lightning.model.PlatformCollectionInfo;
+import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.RechargeDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMemberMapper;
 import com.wulingqi.lightning.portal.service.CommonService;
 import com.wulingqi.lightning.portal.service.FinanceService;
 import com.wulingqi.lightning.portal.service.MemberService;
+import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
+import com.wulingqi.lightning.utils.LightningConstant;
+import com.wulingqi.lightning.utils.StringUtils;
 
-//@Service
+@Service
 public class FinanceServiceImpl implements FinanceService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FinanceServiceImpl.class);
@@ -27,5 +42,90 @@ public class FinanceServiceImpl implements FinanceService {
 	
 	@Autowired
 	private PortalMapper portalMapper;
+	
+	@Autowired
+	private PlatformCollectionInfoMapper platformCollectionInfoMapper;
+	
+	@Autowired
+	private OfflineRechargeRecordMapper offlineRechargeRecordMapper;
+	
+	/**
+	 * 获取公司收款信息
+	 */
+	@Override
+	public CommonResult<CollectionInfoVo> getCollectionInfo(CollectionInfoDto requestDto) {
+		List<PlatformCollectionInfo> list = portalMapper.selectPlatformCollectionInfoByCollectionType(requestDto.getRechargeType());
+		
+		if(list.isEmpty()) {
+			return CommonResult.failed("未获取到充值方式");
+		}
+		
+		PlatformCollectionInfo bankInfo = list.get(0);
+		for(PlatformCollectionInfo info : list) {
+			
+			if(LightningConstant.DEFAULT_FLAG_YES.equals(info.getDefaultFlag())) {
+				bankInfo = info;
+				break;
+			}
+		}
+		
+		CollectionInfoVo bankInfoVo = new CollectionInfoVo();
+		BeanUtils.copyProperties(bankInfo, bankInfoVo);
+		bankInfoVo.setCollectionId(String.valueOf(bankInfo.getId()));
+		
+		return CommonResult.success(bankInfoVo);
+	}
+
+	/**
+	 * 线下充值
+	 */
+	@Override
+	public CommonResult<String> recharge(RechargeDto requestDto) {
+		
+		Long memberId = memberService.getCurrentMember().getId();
+		
+		if(requestDto.getCollectionId() == null
+				|| StringUtils.isEmpty(requestDto.getPaymentScreenshot())
+				|| requestDto.getValue() == null
+				|| requestDto.getValue() <= 0) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		PlatformCollectionInfo collectionInfo = platformCollectionInfoMapper.selectByPrimaryKey(requestDto.getCollectionId());
+
+		if(collectionInfo == null) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		//如果收款方式为银行类型，判断支付银行信息为必填
+		if(LightningConstant.COLLECTION_TYPE_BANK.equals(collectionInfo.getCollectionType())
+				&& (StringUtils.isEmpty(requestDto.getPaymentBankName())
+						|| StringUtils.isEmpty(requestDto.getPaymentAccountName())
+						|| StringUtils.isEmpty(requestDto.getPaymentBankCardNo()))
+				) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		//写入线下充值记录表
+		OfflineRechargeRecord rechargeRecord = new OfflineRechargeRecord();
+		rechargeRecord.setCollectionId(collectionInfo.getId());
+		rechargeRecord.setMemberId(memberId);
+		rechargeRecord.setRechargeType(collectionInfo.getCollectionType());
+		
+		BigDecimal b = new BigDecimal(requestDto.getValue());
+		rechargeRecord.setValue(b.setScale(2, BigDecimal.ROUND_DOWN).toPlainString());
+		
+		if(LightningConstant.COLLECTION_TYPE_BANK.equals(collectionInfo.getCollectionType())) {
+			rechargeRecord.setPaymentAccountName(requestDto.getPaymentAccountName());
+			rechargeRecord.setPaymentBankName(requestDto.getPaymentBankName());
+			rechargeRecord.setPaymentBankCardNo(requestDto.getPaymentBankCardNo());
+		}
+		rechargeRecord.setPaymentScreenshot(requestDto.getPaymentScreenshot());
+		rechargeRecord.setCreateTime(new Date());
+		
+		offlineRechargeRecordMapper.insert(rechargeRecord);
+		
+		return CommonResult.success(null, "提交成功");
+	}
 
 }

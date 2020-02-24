@@ -3,11 +3,11 @@
 <mapper namespace="com.wulingqi.lightning.portal.mapper.PortalMapper">
     
     <select id="selectAppUpgradeByType" resultMap="com.wulingqi.lightning.mapper.AppUpgradeMapper.BaseResultMap">
-        SELECT
+        select
             *
-        FROM
+        from
             br_app_upgrade
-        WHERE type = #{type}
+        where type = #{type}
     </select>
     
     <select id="selectVerificationCodeByReceiverAndMinute" resultMap="com.wulingqi.lightning.mapper.VerificationCodeMapper.BaseResultMap">
@@ -17,6 +17,16 @@
             br_verification_code
         where phone = #{phone}
         and create_time >= DATE_SUB(NOW(), INTERVAL #{minute} MINUTE)
+    </select>
+    
+    <select id="selectPlatformCollectionInfoByCollectionType" resultMap="com.wulingqi.lightning.mapper.PlatformCollectionInfoMapper.BaseResultMap">
+        select
+            *
+        from
+            br_platform_collection_info
+        where collection_type = #{collectionType}
+        and delete_status = 0
+        order by create_time desc
     </select>
    	
 </mapper>

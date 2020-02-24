@@ -164,25 +164,29 @@ CREATE TABLE IF NOT EXISTS `br_manager_operate_member_account_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='管理员操作会员账户日志表';
 
 
-DROP TABLE IF EXISTS `br_collection_bank_info`;
-CREATE TABLE IF NOT EXISTS `br_collection_bank_info` (
+DROP TABLE IF EXISTS `br_platform_collection_info`;
+CREATE TABLE IF NOT EXISTS `br_platform_collection_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `collection_type` int(1) DEFAULT NULL COMMENT '收款类型: 0->银行卡; 1->支付宝; 2->微信; 3->USDT',
   `bank_name` varchar(64) DEFAULT NULL COMMENT '银行名称',
   `bank_account` varchar(64) DEFAULT NULL COMMENT '银行账户名',
   `bank_card_no` varchar(64) DEFAULT NULL COMMENT '银行卡卡号',
+  `qr_code` varchar(500) DEFAULT NULL COMMENT '收款二维码',
+  `usdt_address` varchar(500) DEFAULT NULL COMMENT 'USDT地址',
+  `default_flag` int(1) DEFAULT NULL COMMENT '默认标识(不同收款类型可以有一个是默认状态): 0->否; 1->是',
+  `delete_status` int(1) DEFAULT NULL COMMENT '删除状态: 0->未删除; 1->已删除',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='平台收款银行信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='平台收款信息表';
 
 
 DROP TABLE IF EXISTS `br_offline_recharge_record`;
 CREATE TABLE IF NOT EXISTS `br_offline_recharge_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `collection_id` bigint(20) DEFAULT NULL COMMENT '收款信息id',
   `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
+  `recharge_type` int(1) DEFAULT NULL COMMENT '充值方式: 0->银行卡; 1->支付宝; 2->微信; 3->USDT',
   `value` varchar(32) DEFAULT NULL COMMENT '充值金额',
-  `collection_account_name` varchar(100) DEFAULT NULL COMMENT '收款账户名',
-  `collection_bank_name` varchar(100) DEFAULT NULL COMMENT '收款银行名称',
-  `collection_bank_card_no` varchar(50) DEFAULT NULL COMMENT '收款银行卡号',
   `payment_account_name` varchar(100) DEFAULT NULL COMMENT '支付账户名',
   `payment_bank_name` varchar(100) DEFAULT NULL COMMENT '支付银行名称',
   `payment_bank_card_no` varchar(50) DEFAULT NULL COMMENT '支付银行卡号',

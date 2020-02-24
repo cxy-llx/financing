@@ -10,29 +10,24 @@ public class OfflineRechargeRecord implements Serializable {
     private Long id;
 
     /**
+     * 收款信息id
+     */
+    private Long collectionId;
+
+    /**
      * 会员id
      */
     private Long memberId;
 
     /**
+     * 充值方式: 0->银行卡; 1->支付宝; 2->微信; 3->USDT
+     */
+    private Integer rechargeType;
+
+    /**
      * 充值金额
      */
     private String value;
-
-    /**
-     * 收款账户名
-     */
-    private String collectionAccountName;
-
-    /**
-     * 收款银行名称
-     */
-    private String collectionBankName;
-
-    /**
-     * 收款银行卡号
-     */
-    private String collectionBankCardNo;
 
     /**
      * 支付账户名
@@ -84,6 +79,14 @@ public class OfflineRechargeRecord implements Serializable {
         this.id = id;
     }
 
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+    }
+
     public Long getMemberId() {
         return memberId;
     }
@@ -92,36 +95,20 @@ public class OfflineRechargeRecord implements Serializable {
         this.memberId = memberId;
     }
 
+    public Integer getRechargeType() {
+        return rechargeType;
+    }
+
+    public void setRechargeType(Integer rechargeType) {
+        this.rechargeType = rechargeType;
+    }
+
     public String getValue() {
         return value;
     }
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public String getCollectionAccountName() {
-        return collectionAccountName;
-    }
-
-    public void setCollectionAccountName(String collectionAccountName) {
-        this.collectionAccountName = collectionAccountName;
-    }
-
-    public String getCollectionBankName() {
-        return collectionBankName;
-    }
-
-    public void setCollectionBankName(String collectionBankName) {
-        this.collectionBankName = collectionBankName;
-    }
-
-    public String getCollectionBankCardNo() {
-        return collectionBankCardNo;
-    }
-
-    public void setCollectionBankCardNo(String collectionBankCardNo) {
-        this.collectionBankCardNo = collectionBankCardNo;
     }
 
     public String getPaymentAccountName() {
@@ -195,11 +182,10 @@ public class OfflineRechargeRecord implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
+        sb.append(", collectionId=").append(collectionId);
         sb.append(", memberId=").append(memberId);
+        sb.append(", rechargeType=").append(rechargeType);
         sb.append(", value=").append(value);
-        sb.append(", collectionAccountName=").append(collectionAccountName);
-        sb.append(", collectionBankName=").append(collectionBankName);
-        sb.append(", collectionBankCardNo=").append(collectionBankCardNo);
         sb.append(", paymentAccountName=").append(paymentAccountName);
         sb.append(", paymentBankName=").append(paymentBankName);
         sb.append(", paymentBankCardNo=").append(paymentBankCardNo);

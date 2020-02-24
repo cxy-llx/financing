@@ -23,4 +23,14 @@ jwt:
   expiration: 604800 #JWT的超期限时间(60*60*24)
   tokenHead: Bearer  #JWT负载中拿到开头
 
+#七牛云
+qiniu:
+  accessKey: VTj1MSsrMPOOs-U9ZV1yWrAvEoW6pZPdIWaT7q6i
+  secrectKey: BgdhhGycpIOXBYkY9Iu8LQrqqSf2SJ9Mk5CGEIsV
+  bucket: crayfish
+  host: https://upload-z2.qiniup.com
+  cdnUrl: http://dssc.qn.cnyiliaosc.com
+  zone: zone2
+
+
 

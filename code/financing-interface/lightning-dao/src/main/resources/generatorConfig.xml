@@ -149,24 +149,6 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
-        <table tableName="br_collection_bank_info" domainObjectName="CollectionBankInfo" 
-			enableCountByExample="false"
-			enableUpdateByExample="false"
-			enableDeleteByExample="false"
-			enableSelectByExample="false"
-			selectByExampleQueryId="false" >
-            <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
-        
-        <table tableName="br_offline_recharge_record" domainObjectName="OfflineRechargeRecord" 
-			enableCountByExample="false"
-			enableUpdateByExample="false"
-			enableDeleteByExample="false"
-			enableSelectByExample="false"
-			selectByExampleQueryId="false" >
-            <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
-        
         <table tableName="br_effective_member_statistics" domainObjectName="EffectiveMemberStatistics" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
@@ -212,8 +194,6 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
-        -->
-        
         <table tableName="br_statistics_handle_queue" domainObjectName="StatisticsHandleQueue" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
@@ -223,7 +203,26 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
+        -->
         
+        
+        <table tableName="br_platform_collection_info" domainObjectName="PlatformCollectionInfo" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_offline_recharge_record" domainObjectName="OfflineRechargeRecord" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
         
         
     </context>

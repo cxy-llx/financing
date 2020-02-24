@@ -109,8 +109,37 @@ public class LightningConstant {
     /**
      * 处理类型: 1->分销统计
      */
-    public static final Integer HANDLE_TYPE_DISTRIBUTION= 1;
+    public static final Integer HANDLE_TYPE_DISTRIBUTION = 1;
     
+    /**
+     * 默认标识: 0->否
+     */
+    public static final Integer DEFAULT_FLAG_NO = 0;
+    
+    /**
+     * 默认标识: 1->是
+     */
+    public static final Integer DEFAULT_FLAG_YES = 1;
+    
+    /**
+     * 收款方式: 0->银行卡
+     */
+    public static final Integer COLLECTION_TYPE_BANK = 0;
+    
+    /**
+     * 收款方式: 1->支付宝
+     */
+    public static final Integer COLLECTION_TYPE_ALIPAY = 1;
+    
+    /**
+     * 收款方式: 2->微信
+     */
+    public static final Integer COLLECTION_TYPE_WECHAT = 2;
+    
+    /**
+     * 收款方式: 3->USDT
+     */
+    public static final Integer COLLECTION_TYPE_USDT = 3;
     
     
     //----------------------------------业务字典start------------------------------------//
