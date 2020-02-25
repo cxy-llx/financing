@@ -1,7 +1,11 @@
 package com.wulingqi.lightning.portal.service;
 
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
@@ -29,5 +33,15 @@ public interface FinanceService {
 	 * 获取积分明细
 	 */
 	CommonResult<IntegrationDetailVo> getIntegrationDetail(PageableDto requestDto);
+
+	/**
+	 * 订单支付-手动
+	 */
+	CommonResult<String> manualPay(ManualPayDto requestDto);
+	
+	/**
+	 * 订单支付-自动
+	 */
+	CommonResult<String> automaticPay(AutomaticPayDto requestDto);
 	
 }

@@ -11,12 +11,14 @@ import com.wulingqi.lightning.portal.dto.AuthCodeDto;
 import com.wulingqi.lightning.portal.dto.CompleteInfoDto;
 import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
+import com.wulingqi.lightning.portal.dto.SharepageLinkDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
 import com.wulingqi.lightning.portal.dto.TeamInfoDto;
 import com.wulingqi.lightning.portal.dto.UpdateAvatarUrlDto;
 import com.wulingqi.lightning.portal.dto.UpdateNicknameDto;
 import com.wulingqi.lightning.portal.service.MemberService;
+import com.wulingqi.lightning.portal.vo.SharepageLinkVo;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
 import com.wulingqi.lightning.portal.vo.TeamInfoVo;
@@ -96,6 +98,12 @@ public class MemberController {
     @RequestMapping(value = "/completeInfo", method = RequestMethod.POST)
     public CommonResult<String> completeInfo(@RequestBody CompleteInfoDto requestDto) {
         return memberService.completeInfo(requestDto);
+    }
+    
+    @ApiOperation(value = "创建分享链接地址")
+    @RequestMapping(value = "/createSharepageLink", method = RequestMethod.POST)
+    public CommonResult<SharepageLinkVo> createSharepageLink(@RequestBody SharepageLinkDto requestDto) {
+        return memberService.createSharepageLink(requestDto);
     }
 
 }

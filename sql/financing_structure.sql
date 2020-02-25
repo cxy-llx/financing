@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `br_order` (
   `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
   `order_no` varchar(64) DEFAULT NULL COMMENT '系统订单编号',
   `merchant_order_no` varchar(255) DEFAULT NULL COMMENT '商户订单编号',
-  `pay_order_no` varchar(255) DEFAULT NULL COMMENT '支付订单编号(支付宝)',
+  `pay_order_no` varchar(255) DEFAULT NULL COMMENT '订单编号(支付宝)',
   `pay_type` int(1) DEFAULT 0 COMMENT '支付方式: 0->支付宝',
   `amount` varchar(32) DEFAULT NULL COMMENT '支付金额',
   `pay_code` varchar(1200) DEFAULT NULL COMMENT '支付码',
@@ -21,8 +21,26 @@ CREATE TABLE IF NOT EXISTS `br_order` (
   `version` bigint(20) NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
   PRIMARY KEY (`id`),
   KEY `merchant_id` (`merchant_id`),
-  KEY `member_id` (`member_id`)
+  KEY `member_id` (`member_id`),
+  KEY `order_no` (`order_no`),
+  KEY `merchant_order_no` (`merchant_order_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单表';
+
+
+DROP TABLE IF EXISTS `br_order_callback`;
+CREATE TABLE IF NOT EXISTS `br_order_callback` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `order_id` bigint(20) DEFAULT NULL COMMENT '订单id',
+  `order_no` varchar(64) DEFAULT NULL COMMENT '系统订单编号',
+  `content` varchar(255) DEFAULT NULL COMMENT '回调内容',
+  `url` varchar(500) DEFAULT NULL COMMENT '回调url',
+  `count` int(2) DEFAULT 0 COMMENT '回调次数',
+  `remark` varchar(500) DEFAULT NULL COMMENT '备注',
+  `callback_time` datetime DEFAULT NULL COMMENT '回调时间',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单回调表';
 
 
 DROP TABLE IF EXISTS `br_merchant`;
@@ -321,5 +339,6 @@ INSERT INTO `br_business_dictionary` (`name`, `value`, `comment`, `show_status`,
 
 
 DELETE FROM `br_general_data`;
-
+INSERT INTO `mall_general_data` (`field`, `value`, `note`) VALUES 
+	('share_page_url', 'http://localhost:8091/index.html', '分享连接地址');
 

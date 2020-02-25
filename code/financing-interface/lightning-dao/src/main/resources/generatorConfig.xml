@@ -212,9 +212,6 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
-        -->
-        
-        
         <table tableName="br_member" domainObjectName="Member" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
@@ -223,6 +220,27 @@
 			selectByExampleQueryId="false" >
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
+        
+        -->
+        
+        <table tableName="br_order" domainObjectName="Order" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_order_callback" domainObjectName="OrderCallback" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
         
         
     </context>

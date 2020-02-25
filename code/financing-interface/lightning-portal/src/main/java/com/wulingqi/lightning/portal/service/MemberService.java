@@ -10,11 +10,13 @@ import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
+import com.wulingqi.lightning.portal.dto.SharepageLinkDto;
 import com.wulingqi.lightning.portal.dto.TeamInfoDto;
 import com.wulingqi.lightning.portal.dto.UpdateAvatarUrlDto;
 import com.wulingqi.lightning.portal.dto.UpdateNicknameDto;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
+import com.wulingqi.lightning.portal.vo.SharepageLinkVo;
 import com.wulingqi.lightning.portal.vo.TeamInfoVo;
 
 /**
@@ -90,4 +92,9 @@ public interface MemberService {
      */
     @Transactional
     CommonResult<String> completeInfo(CompleteInfoDto requestDto);
+    
+    /**
+     * 创建分享链接地址
+     */
+    CommonResult<SharepageLinkVo> createSharepageLink(SharepageLinkDto requestDto);
 }

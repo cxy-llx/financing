@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
 import com.wulingqi.lightning.portal.service.FinanceService;
@@ -48,6 +50,18 @@ public class FinanceController {
     @RequestMapping(value = "/getIntegrationDetail", method = RequestMethod.POST)
     public CommonResult<IntegrationDetailVo> getIntegrationDetail(@RequestBody PageableDto requestDto) {
 		return financeService.getIntegrationDetail(requestDto);
+    }
+	
+	@ApiOperation("订单支付-手动")
+    @RequestMapping(value = "/manualPay", method = RequestMethod.POST)
+    public CommonResult<String> manualPay(@RequestBody ManualPayDto requestDto) {
+		return financeService.manualPay(requestDto);
+    }
+	
+	@ApiOperation("订单支付-自动")
+    @RequestMapping(value = "/automaticPay", method = RequestMethod.POST)
+    public CommonResult<String> automaticPay(@RequestBody AutomaticPayDto requestDto) {
+		return financeService.automaticPay(requestDto);
     }
 
 }

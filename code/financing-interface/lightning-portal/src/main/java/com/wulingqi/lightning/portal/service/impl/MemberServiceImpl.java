@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 
 import com.github.pagehelper.PageHelper;
 import com.wulingqi.lightning.api.CommonResult;
@@ -36,6 +37,7 @@ import com.wulingqi.lightning.portal.dto.EditPasswordDto;
 import com.wulingqi.lightning.portal.dto.ForgetPasswordDto;
 import com.wulingqi.lightning.portal.dto.LoginDto;
 import com.wulingqi.lightning.portal.dto.RegisterDto;
+import com.wulingqi.lightning.portal.dto.SharepageLinkDto;
 import com.wulingqi.lightning.portal.dto.TeamInfoDto;
 import com.wulingqi.lightning.portal.dto.UpdateAvatarUrlDto;
 import com.wulingqi.lightning.portal.dto.UpdateNicknameDto;
@@ -48,6 +50,7 @@ import com.wulingqi.lightning.portal.util.JwtTokenUtil;
 import com.wulingqi.lightning.portal.util.RegexpUtils;
 import com.wulingqi.lightning.portal.vo.LoginVo;
 import com.wulingqi.lightning.portal.vo.MemberInfoVo;
+import com.wulingqi.lightning.portal.vo.SharepageLinkVo;
 import com.wulingqi.lightning.portal.vo.TeamInfoVo;
 import com.wulingqi.lightning.portal.vo.TeamListVo;
 import com.wulingqi.lightning.utils.IPUtil;
@@ -623,6 +626,41 @@ public class MemberServiceImpl implements MemberService {
       		}
     	}
     	return CommonResult.success(null, "修改成功");
+	}
+
+	/**
+     * 创建分享链接地址
+     */
+	@Override
+	public CommonResult<SharepageLinkVo> createSharepageLink(SharepageLinkDto requestDto) {
+		
+		if(StringUtils.isEmpty(requestDto.getAgentRatio())) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		//输入的分享代理比例
+		BigDecimal shareAgentRatio = new BigDecimal(requestDto.getAgentRatio());
+		
+		Member member = memberMapper.selectByPrimaryKey(getCurrentMember().getId());
+		
+		BigDecimal agentRatio = new BigDecimal(member.getAgentRatio());
+    	
+    	if(shareAgentRatio.compareTo(agentRatio) > 0
+    			|| shareAgentRatio.compareTo(new BigDecimal("0")) < 1) {
+    		return CommonResult.failed("无效的代理比例，请重新输入");
+    	}
+    	
+    	SharepageLinkVo result = new SharepageLinkVo();
+    	
+    	String url = commonService.getGeneralDataValue(LightningConstant.SHARE_PAGE_URL);
+    	
+    	String param = member.getInviteCode() + "+" + shareAgentRatio.toPlainString() + "+" + new Date().getTime();
+    	
+    	result.setUrl(url + "?param=" + Base64Utils.encode(param.getBytes()));
+		
+    	LOGGER.info(result.getUrl());
+    	
+		return CommonResult.success(result);
 	}
 
 }

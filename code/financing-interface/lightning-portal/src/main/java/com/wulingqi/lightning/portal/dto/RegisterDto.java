@@ -20,6 +20,9 @@ public class RegisterDto {
 	@ApiModelProperty(value = "代理比例(测试邀请码可以不传代理比例)")
 	private String agentRatio;
 	
+	@ApiModelProperty(value = "参数")
+	private String param;
+	
 	@ApiModelProperty(value = "密码")
 	private String password;
 	

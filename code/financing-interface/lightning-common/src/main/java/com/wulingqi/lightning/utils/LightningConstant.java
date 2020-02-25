@@ -169,9 +169,16 @@ public class LightningConstant {
      */
     public static final String MEMBER_AGENT_RATIO = "member_agent_ratio";
     
+    //----------------------------------业务字典end------------------------------------//
+    
 	
 	//----------------------------------通用数据字典start------------------------------------//
 	
+    /**
+	 * 分享连接地址
+	 */
+	public static final String SHARE_PAGE_URL = "share_page_url";
 	
+	//----------------------------------通用数据字典end------------------------------------//
 	
 }

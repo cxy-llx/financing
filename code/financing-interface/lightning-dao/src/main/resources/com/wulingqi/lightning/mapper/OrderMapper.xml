@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.Order">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="merchant_order_no" jdbcType="VARCHAR" property="merchantOrderNo" />
+    <result column="pay_order_no" jdbcType="VARCHAR" property="payOrderNo" />
+    <result column="pay_type" jdbcType="INTEGER" property="payType" />
+    <result column="amount" jdbcType="VARCHAR" property="amount" />
+    <result column="pay_code" jdbcType="VARCHAR" property="payCode" />
+    <result column="success_url" jdbcType="VARCHAR" property="successUrl" />
+    <result column="error_url" jdbcType="VARCHAR" property="errorUrl" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="callback_status" jdbcType="INTEGER" property="callbackStatus" />
+    <result column="deadline_time" jdbcType="TIMESTAMP" property="deadlineTime" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="version" jdbcType="BIGINT" property="version" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.Order">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_order (merchant_id, member_id, order_no, 
+      merchant_order_no, pay_order_no, pay_type, 
+      amount, pay_code, success_url, 
+      error_url, status, callback_status, 
+      deadline_time, pay_time, create_time, 
+      version)
+    values (#{merchantId,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, 
+      #{merchantOrderNo,jdbcType=VARCHAR}, #{payOrderNo,jdbcType=VARCHAR}, #{payType,jdbcType=INTEGER}, 
+      #{amount,jdbcType=VARCHAR}, #{payCode,jdbcType=VARCHAR}, #{successUrl,jdbcType=VARCHAR}, 
+      #{errorUrl,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{callbackStatus,jdbcType=INTEGER}, 
+      #{deadlineTime,jdbcType=TIMESTAMP}, #{payTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{version,jdbcType=BIGINT})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.Order">
+    update br_order
+    set merchant_id = #{merchantId,jdbcType=BIGINT},
+      member_id = #{memberId,jdbcType=BIGINT},
+      order_no = #{orderNo,jdbcType=VARCHAR},
+      merchant_order_no = #{merchantOrderNo,jdbcType=VARCHAR},
+      pay_order_no = #{payOrderNo,jdbcType=VARCHAR},
+      pay_type = #{payType,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=VARCHAR},
+      pay_code = #{payCode,jdbcType=VARCHAR},
+      success_url = #{successUrl,jdbcType=VARCHAR},
+      error_url = #{errorUrl,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      callback_status = #{callbackStatus,jdbcType=INTEGER},
+      deadline_time = #{deadlineTime,jdbcType=TIMESTAMP},
+      pay_time = #{payTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      version = #{version,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, merchant_id, member_id, order_no, merchant_order_no, pay_order_no, pay_type, 
+    amount, pay_code, success_url, error_url, status, callback_status, deadline_time, 
+    pay_time, create_time, version
+    from br_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, merchant_id, member_id, order_no, merchant_order_no, pay_order_no, pay_type, 
+    amount, pay_code, success_url, error_url, status, callback_status, deadline_time, 
+    pay_time, create_time, version
+    from br_order
+  </select>
+</mapper>

@@ -17,7 +17,9 @@ import com.wulingqi.lightning.mapper.PlatformCollectionInfoMapper;
 import com.wulingqi.lightning.model.Member;
 import com.wulingqi.lightning.model.OfflineRechargeRecord;
 import com.wulingqi.lightning.model.PlatformCollectionInfo;
+import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
@@ -168,6 +170,30 @@ public class FinanceServiceImpl implements FinanceService {
 		result.setExpend(portalMemberMapper.selectMemberTotalExpend(memberId).toPlainString());
 		
 		return CommonResult.success(result);
+	}
+
+	/**
+	 * 订单支付-手动
+	 */
+	@Override
+	public CommonResult<String> manualPay(ManualPayDto requestDto) {
+		
+		if(requestDto.getOrderId() == null) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		
+		
+		
+		return CommonResult.success(null, "支付成功");
+	}
+
+	/**
+	 * 订单支付-自动
+	 */
+	@Override
+	public CommonResult<String> automaticPay(AutomaticPayDto requestDto) {
+		return null;
 	}
 
 }
