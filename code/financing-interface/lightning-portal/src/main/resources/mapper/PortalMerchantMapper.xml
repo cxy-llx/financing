@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.portal.mapper.PortalMapper">
+    
+    <update id="updateMerchantByPrimaryKey" parameterType="com.wulingqi.lightning.model.Merchant">
+	    update br_merchant
+	    set user_id = #{userId,jdbcType=BIGINT},
+	    	name = #{name,jdbcType=VARCHAR},
+			password = #{password,jdbcType=VARCHAR},
+			passwd_salt = #{passwdSalt,jdbcType=VARCHAR},
+			phone = #{phone,jdbcType=VARCHAR},
+			avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+			mch_id = #{mchId,jdbcType=VARCHAR},
+			mch_key = #{mchKey,jdbcType=VARCHAR},
+			balance = #{balance,jdbcType=VARCHAR},
+			freeze_balance = #{freezeBalance,jdbcType=VARCHAR},
+			settlement_rate = #{settlementRate,jdbcType=VARCHAR},
+			login_time = #{loginTime,jdbcType=TIMESTAMP},
+			login_ip = #{loginIp,jdbcType=VARCHAR},
+			status = #{status,jdbcType=INTEGER},
+			delete_status = #{deleteStatus,jdbcType=INTEGER},
+			update_time = #{updateTime,jdbcType=TIMESTAMP},
+			create_time = #{createTime,jdbcType=TIMESTAMP},
+			version = version + 1
+	    where id = #{id,jdbcType=BIGINT}
+	    and version = #{version,jdbcType=BIGINT}
+	</update>
+   	
+</mapper>

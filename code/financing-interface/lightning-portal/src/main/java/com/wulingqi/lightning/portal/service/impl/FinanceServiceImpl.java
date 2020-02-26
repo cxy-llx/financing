@@ -12,10 +12,18 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.mapper.AccountConcurrentErrorMapper;
+import com.wulingqi.lightning.mapper.MemberIntegrationTradeMapper;
+import com.wulingqi.lightning.mapper.MerchantBalanceTradeMapper;
+import com.wulingqi.lightning.mapper.MerchantMapper;
 import com.wulingqi.lightning.mapper.OfflineRechargeRecordMapper;
 import com.wulingqi.lightning.mapper.OrderMapper;
 import com.wulingqi.lightning.mapper.PlatformCollectionInfoMapper;
+import com.wulingqi.lightning.model.AccountConcurrentError;
 import com.wulingqi.lightning.model.Member;
+import com.wulingqi.lightning.model.MemberIntegrationTrade;
+import com.wulingqi.lightning.model.Merchant;
+import com.wulingqi.lightning.model.MerchantBalanceTrade;
 import com.wulingqi.lightning.model.OfflineRechargeRecord;
 import com.wulingqi.lightning.model.Order;
 import com.wulingqi.lightning.model.PlatformCollectionInfo;
@@ -26,7 +34,7 @@ import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMemberMapper;
-import com.wulingqi.lightning.portal.service.CommonService;
+import com.wulingqi.lightning.portal.mapper.PortalMerchantMapper;
 import com.wulingqi.lightning.portal.service.FinanceService;
 import com.wulingqi.lightning.portal.service.MemberService;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
@@ -39,9 +47,6 @@ import com.wulingqi.lightning.utils.StringUtils;
 public class FinanceServiceImpl implements FinanceService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FinanceServiceImpl.class);
-	
-	@Autowired
-	private CommonService commonService;
 	
 	@Autowired
 	private MemberService memberService;
@@ -60,6 +65,22 @@ public class FinanceServiceImpl implements FinanceService {
 	
 	@Autowired
 	private OrderMapper orderMapper;
+	
+	@Autowired
+	private MerchantMapper merchantMapper;
+	
+	@Autowired
+	private MerchantBalanceTradeMapper merchantBalanceTradeMapper;
+	
+	@Autowired
+	private MemberIntegrationTradeMapper memberIntegrationTradeMapper;
+	
+	@Autowired
+	private AccountConcurrentErrorMapper accountConcurrentErrorMapper;
+	
+	@Autowired
+	private PortalMerchantMapper portalMerchantMapper;
+	
 	
 	/**
 	 * 获取公司收款信息
@@ -184,7 +205,7 @@ public class FinanceServiceImpl implements FinanceService {
 	public CommonResult<String> manualPay(ManualPayDto requestDto) {
 		
 		Long orderId = requestDto.getOrderId();
-		Long memberId = memberService.getCurrentMember().getId();
+		Member member = memberService.getMemberById(memberService.getCurrentMember().getId());
 		
 		if(orderId == null) {
 			return CommonResult.failed(LightningConstant.SERVER_ERROR);
@@ -192,7 +213,7 @@ public class FinanceServiceImpl implements FinanceService {
 		
 		//判断订单信息是否与会员信息匹配
 		Order order = orderMapper.selectByPrimaryKey(orderId);
-		if(order == null || !memberId.equals(order.getMemberId())) {
+		if(order == null || !member.getId().equals(order.getMemberId())) {
 			return CommonResult.failed(LightningConstant.SERVER_ERROR);
 		}
 		
@@ -201,7 +222,50 @@ public class FinanceServiceImpl implements FinanceService {
 			return CommonResult.failed("订单已支付，请勿重复支付");
 		}
 		
+		Date currentDate = new Date();
 		
+		//更新订单状态和支付时间
+		order.setOrderStatus(LightningConstant.ORDER_STATUS_PAID); //订单状态: 1->已支付
+		order.setCallbackType(LightningConstant.CALLBACK_TYPE_MEMBER); //回调类型: 1->会员手工回调
+		order.setPayTime(currentDate);
+		
+		orderMapper.updateByPrimaryKey(order);
+		
+		//查看订单是否还存在回调任务，如果不存在，添加回调任务
+		
+		//扣减会员冻结余额
+		BigDecimal freezeIntegration = new BigDecimal(member.getFreezeIntegration());
+		BigDecimal tradeValue = new BigDecimal(order.getAmount());
+		BigDecimal beforeValue = new BigDecimal(member.getIntegration()).add(freezeIntegration);
+		BigDecimal afterValue = beforeValue.subtract(tradeValue);
+		
+		//写入会员账户交易记录表
+		insertAccountTrade(member.getId(), LightningConstant.USER_TYPE_MEMBER, LightningConstant.TRADE_TYPE_EXPEND,
+				LightningConstant.TRADE_ITEM_ORDER_PAY, beforeValue, tradeValue, afterValue, "理财释放", order.getOrderNo(), currentDate);
+		
+		member.setFreezeIntegration(freezeIntegration.subtract(tradeValue).toPlainString());
+		int count = portalMemberMapper.updateMemberByPrimaryKey(member);
+		if(count != 1) {
+			insertAccountConcurrentError(member.getId(), LightningConstant.USER_TYPE_MEMBER, LightningConstant.TRADE_TYPE_EXPEND,
+					LightningConstant.TRADE_ITEM_ORDER_PAY, tradeValue, "理财释放", order.getOrderNo(), currentDate);
+		}
+		
+		//增加商户余额
+		Merchant merchant = merchantMapper.selectByPrimaryKey(order.getMerchantId());
+		BigDecimal balance = new BigDecimal(merchant.getBalance());
+		beforeValue = balance.add(new BigDecimal(merchant.getFreezeBalance()));
+		afterValue = beforeValue.add(tradeValue);
+		
+		//写入商户账户交易记录表
+		insertAccountTrade(merchant.getId(), LightningConstant.USER_TYPE_MERCHANT, LightningConstant.TRADE_TYPE_INCOME,
+				LightningConstant.TRADE_ITEM_ORDER_PAY, beforeValue, tradeValue, afterValue, "订单支付", order.getOrderNo(), currentDate);
+		merchant.setBalance(balance.add(tradeValue).toPlainString());
+		
+		count = portalMerchantMapper.updateMerchantByPrimaryKey(merchant);
+		if(count != 1) {
+			insertAccountConcurrentError(merchant.getId(), LightningConstant.USER_TYPE_MERCHANT, LightningConstant.TRADE_TYPE_INCOME,
+					LightningConstant.TRADE_ITEM_ORDER_PAY, tradeValue, "订单支付", order.getOrderNo(), currentDate);
+		}
 		
 		return CommonResult.success(null, "支付成功");
 	}
@@ -211,7 +275,87 @@ public class FinanceServiceImpl implements FinanceService {
 	 */
 	@Override
 	public CommonResult<String> automaticPay(AutomaticPayDto requestDto) {
+		
+		Long memberId = memberService.getCurrentMember().getId();
+		
 		return null;
+	}
+	
+	/**
+	 * 写入账户交易表
+	 * @param id 会员id/商户id
+	 * @param userType 用户类型: 0->会员; 1->商户
+	 * @param tradeType 交易类型: 0->收入; 1->支出
+	 * @param tradeItem 交易项目
+	 * @param beforeValue 交易前值
+	 * @param value 交易值
+	 * @param afterValue 交易后值
+	 * @param title 标题
+	 * @param note 备注
+	 */
+	@Override
+	public void insertAccountTrade(Long id, Integer userType, Integer tradeType, Integer tradeItem,
+			BigDecimal beforeValue, BigDecimal value, BigDecimal afterValue, String title, String note, Date createTime) {
+		
+		if(LightningConstant.USER_TYPE_MEMBER.equals(userType)) {
+			
+			MemberIntegrationTrade integrationTrade = new MemberIntegrationTrade();
+			integrationTrade.setMemberId(id);
+			integrationTrade.setTradeType(tradeType);
+			integrationTrade.setTradeItem(tradeItem);
+			integrationTrade.setBeforeValue(beforeValue.toPlainString());
+			integrationTrade.setValue(value.toPlainString());
+			integrationTrade.setAfterValue(afterValue.toPlainString());
+			integrationTrade.setTitle(title);
+			integrationTrade.setNote(note);
+			integrationTrade.setCreateTime(createTime);
+			memberIntegrationTradeMapper.insert(integrationTrade);
+			
+		} else {
+			
+			MerchantBalanceTrade balanceTrade = new MerchantBalanceTrade();
+			balanceTrade.setMerchantId(id);
+			balanceTrade.setTradeType(tradeType);
+			balanceTrade.setTradeItem(tradeItem);
+			balanceTrade.setBeforeValue(beforeValue.toPlainString());
+			balanceTrade.setValue(value.toPlainString());
+			balanceTrade.setAfterValue(afterValue.toPlainString());
+			balanceTrade.setTitle(title);
+			balanceTrade.setNote(note);
+			balanceTrade.setCreateTime(createTime);
+			merchantBalanceTradeMapper.insert(balanceTrade);
+			
+		}
+		
+	}
+
+	/**
+	 * 写入账户并发错误表
+	 * @param id 会员id/商户id
+	 * @param userType 用户类型: 0->会员; 1->商户
+	 * @param tradeType 交易类型: 0->收入; 1->支出
+	 * @param tradeItem 交易项目
+	 * @param value 交易值
+	 * @param title 标题
+	 * @param note 备注
+	 */
+	@Override
+	public void insertAccountConcurrentError(Long id, Integer userType, Integer tradeType,
+			Integer tradeItem, BigDecimal value, String title, String note, Date createTime) {
+		
+		AccountConcurrentError record = new AccountConcurrentError();
+		record.setUserId(id);
+		record.setUserType(userType);
+		record.setTradeType(tradeType);
+		record.setTradeItem(tradeItem);
+		record.setValue(value);
+		record.setTitle(title);
+		record.setNote(note);
+		record.setHandleStatus(LightningConstant.HANDLE_STATUS_NO);
+		record.setCreateTime(createTime);
+		
+		accountConcurrentErrorMapper.insert(record);
+		
 	}
 
 }

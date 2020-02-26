@@ -171,6 +171,52 @@ public class LightningConstant {
      */
     public static final Integer ORDER_STATUS_TIMEOUT = 2;
     
+    /**
+     * 回调类型: 0->系统回调
+     */
+    public static final Integer CALLBACK_TYPE_SYSTEM = 0;
+    
+    /**
+     * 回调类型: 1->会员手工回调
+     */
+    public static final Integer CALLBACK_TYPE_MEMBER = 1;
+    
+    /**
+     * 回调类型: 2->平台手工回调
+     */
+    public static final Integer CALLBACK_TYPE_PLATFORM = 2;
+    
+    /**
+     * 用户类型: 0->会员
+     */
+    public static final Integer USER_TYPE_MEMBER = 0;
+    
+    /**
+     * 用户类型: 1->商户
+     */
+    public static final Integer USER_TYPE_MERCHANT = 1;
+    
+    /**
+     * 交易类型: 0->收入
+     */
+    public static final Integer TRADE_TYPE_INCOME = 0;
+    
+    /**
+     * 交易类型: 1->支出
+     */
+    public static final Integer TRADE_TYPE_EXPEND = 1;
+    
+    /**
+     * 交易项目: 0->充值
+     */
+    public static final Integer TRADE_ITEM_RECHARGE = 0;
+    
+    /**
+     * 交易项目: 1->订单支付
+     */
+    public static final Integer TRADE_ITEM_ORDER_PAY = 1;
+    
+    
     //----------------------------------业务字典start------------------------------------//
     
     /**

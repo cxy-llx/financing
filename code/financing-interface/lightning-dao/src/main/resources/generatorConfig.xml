@@ -230,6 +230,24 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
+        <table tableName="br_order_callback" domainObjectName="OrderCallback" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_account_concurrent_error" domainObjectName="AccountConcurrentError" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
         -->
         
         <table tableName="br_order" domainObjectName="Order" 
@@ -240,16 +258,6 @@
 			selectByExampleQueryId="false" >
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
-        
-        <table tableName="br_order_callback" domainObjectName="OrderCallback" 
-			enableCountByExample="false"
-			enableUpdateByExample="false"
-			enableDeleteByExample="false"
-			enableSelectByExample="false"
-			selectByExampleQueryId="false" >
-            <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
-        
         
         
     </context>

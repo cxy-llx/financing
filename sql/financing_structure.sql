@@ -1,4 +1,22 @@
 
+
+DROP TABLE IF EXISTS `br_account_concurrent_error`;
+CREATE TABLE IF NOT EXISTS `br_account_concurrent_error` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_id` bigint(20) DEFAULT NULL COMMENT '会员id/商户主键id',
+  `user_type` int(1) DEFAULT NULL COMMENT '用户类型: 0->会员; 1->商户',
+  `trade_type` int(1) DEFAULT NULL COMMENT '交易类型: 0->收入; 1->支出',
+  `trade_item` int(1) DEFAULT NULL COMMENT '交易项目',
+  `value` decimal(15,8) DEFAULT 0 COMMENT '交易金额',
+  `title` varchar(100) DEFAULT NULL COMMENT '交易标题',
+  `note` varchar(255) DEFAULT NULL COMMENT '备注',
+  `handle_status` int(1) DEFAULT NULL COMMENT '处理状态: 0->未处理; 1->已处理',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='账户并发错误表';
+
+
 DROP TABLE IF EXISTS `br_unmatch_order`;
 CREATE TABLE IF NOT EXISTS `br_unmatch_order` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -25,17 +43,17 @@ CREATE TABLE IF NOT EXISTS `br_order` (
   `merchant_order_no` varchar(255) DEFAULT NULL COMMENT '商户订单编号',
   `pay_order_no` varchar(255) DEFAULT NULL COMMENT '订单编号(支付宝)',
   `pay_type` int(1) DEFAULT 0 COMMENT '支付方式: 0->支付宝',
-  `amount` varchar(32) DEFAULT NULL COMMENT '支付金额',
+  `amount` varchar(32) DEFAULT NULL COMMENT '订单金额',
+  `pay_amount` varchar(32) DEFAULT NULL COMMENT '实付金额',
   `pay_code` varchar(1200) DEFAULT NULL COMMENT '支付码',
   `success_url` varchar(255) DEFAULT NULL COMMENT '成功回调地址',
   `error_url` varchar(255) DEFAULT NULL COMMENT '失败回调地址',
   `order_status` int(1) DEFAULT 0 COMMENT '订单状态: 0->未支付; 1->已支付; 2->订单超时',
-  `callback_status` int(1) DEFAULT 0 COMMENT '回调状态: 0->未回调; 2->已回调',
-  `callback_type` int(1) DEFAULT 0 COMMENT '回调类型: 0->系统回调; 2->手工回调',
+  `callback_status` int(1) DEFAULT 0 COMMENT '回调状态: 0->未回调; 1->已回调',
+  `callback_type` int(1) DEFAULT 0 COMMENT '回调类型: 0->系统回调; 1->会员手工回调; 2->平台手工回调',
   `deadline_time` datetime DEFAULT NULL COMMENT '支付码超时时间',
   `pay_time` datetime DEFAULT NULL COMMENT '支付时间',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `version` bigint(20) NOT NULL DEFAULT 1 COMMENT '乐观锁版本号',
   PRIMARY KEY (`id`),
   KEY `merchant_id` (`merchant_id`),
   KEY `member_id` (`member_id`),

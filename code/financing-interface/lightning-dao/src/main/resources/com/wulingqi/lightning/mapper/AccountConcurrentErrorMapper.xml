@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.AccountConcurrentErrorMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.AccountConcurrentError">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
+    <result column="trade_type" jdbcType="INTEGER" property="tradeType" />
+    <result column="trade_item" jdbcType="INTEGER" property="tradeItem" />
+    <result column="value" jdbcType="DECIMAL" property="value" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="handle_status" jdbcType="INTEGER" property="handleStatus" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_account_concurrent_error
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.AccountConcurrentError">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_account_concurrent_error (user_id, user_type, trade_type, 
+      trade_item, value, title, 
+      note, handle_status, create_time
+      )
+    values (#{userId,jdbcType=BIGINT}, #{userType,jdbcType=INTEGER}, #{tradeType,jdbcType=INTEGER}, 
+      #{tradeItem,jdbcType=INTEGER}, #{value,jdbcType=DECIMAL}, #{title,jdbcType=VARCHAR}, 
+      #{note,jdbcType=VARCHAR}, #{handleStatus,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.AccountConcurrentError">
+    update br_account_concurrent_error
+    set user_id = #{userId,jdbcType=BIGINT},
+      user_type = #{userType,jdbcType=INTEGER},
+      trade_type = #{tradeType,jdbcType=INTEGER},
+      trade_item = #{tradeItem,jdbcType=INTEGER},
+      value = #{value,jdbcType=DECIMAL},
+      title = #{title,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR},
+      handle_status = #{handleStatus,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, user_id, user_type, trade_type, trade_item, value, title, note, handle_status, 
+    create_time
+    from br_account_concurrent_error
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, user_type, trade_type, trade_item, value, title, note, handle_status, 
+    create_time
+    from br_account_concurrent_error
+  </select>
+</mapper>

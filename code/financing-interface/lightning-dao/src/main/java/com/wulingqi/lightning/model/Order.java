@@ -40,9 +40,14 @@ public class Order implements Serializable {
     private Integer payType;
 
     /**
-     * 支付金额
+     * 订单金额
      */
     private String amount;
+
+    /**
+     * 实付金额
+     */
+    private String payAmount;
 
     /**
      * 支付码
@@ -65,12 +70,12 @@ public class Order implements Serializable {
     private Integer orderStatus;
 
     /**
-     * 回调状态: 0->未回调; 2->已回调
+     * 回调状态: 0->未回调; 1->已回调
      */
     private Integer callbackStatus;
 
     /**
-     * 回调类型: 0->系统回调; 2->手工回调
+     * 回调类型: 0->系统回调; 1->会员手工回调; 2->平台手工回调
      */
     private Integer callbackType;
 
@@ -88,11 +93,6 @@ public class Order implements Serializable {
      * 创建时间
      */
     private Date createTime;
-
-    /**
-     * 乐观锁版本号
-     */
-    private Long version;
 
     private static final long serialVersionUID = 1L;
 
@@ -158,6 +158,14 @@ public class Order implements Serializable {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    public String getPayAmount() {
+        return payAmount;
+    }
+
+    public void setPayAmount(String payAmount) {
+        this.payAmount = payAmount;
     }
 
     public String getPayCode() {
@@ -232,14 +240,6 @@ public class Order implements Serializable {
         this.createTime = createTime;
     }
 
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -254,6 +254,7 @@ public class Order implements Serializable {
         sb.append(", payOrderNo=").append(payOrderNo);
         sb.append(", payType=").append(payType);
         sb.append(", amount=").append(amount);
+        sb.append(", payAmount=").append(payAmount);
         sb.append(", payCode=").append(payCode);
         sb.append(", successUrl=").append(successUrl);
         sb.append(", errorUrl=").append(errorUrl);
@@ -263,7 +264,6 @@ public class Order implements Serializable {
         sb.append(", deadlineTime=").append(deadlineTime);
         sb.append(", payTime=").append(payTime);
         sb.append(", createTime=").append(createTime);
-        sb.append(", version=").append(version);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
