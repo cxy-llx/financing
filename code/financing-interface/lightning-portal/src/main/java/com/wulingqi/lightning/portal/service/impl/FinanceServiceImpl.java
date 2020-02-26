@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
 import com.wulingqi.lightning.api.CommonResult;
 import com.wulingqi.lightning.mapper.OfflineRechargeRecordMapper;
+import com.wulingqi.lightning.mapper.OrderMapper;
 import com.wulingqi.lightning.mapper.PlatformCollectionInfoMapper;
 import com.wulingqi.lightning.model.Member;
 import com.wulingqi.lightning.model.OfflineRechargeRecord;
+import com.wulingqi.lightning.model.Order;
 import com.wulingqi.lightning.model.PlatformCollectionInfo;
 import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
@@ -55,6 +57,9 @@ public class FinanceServiceImpl implements FinanceService {
 	
 	@Autowired
 	private OfflineRechargeRecordMapper offlineRechargeRecordMapper;
+	
+	@Autowired
+	private OrderMapper orderMapper;
 	
 	/**
 	 * 获取公司收款信息
@@ -178,10 +183,23 @@ public class FinanceServiceImpl implements FinanceService {
 	@Override
 	public CommonResult<String> manualPay(ManualPayDto requestDto) {
 		
-		if(requestDto.getOrderId() == null) {
+		Long orderId = requestDto.getOrderId();
+		Long memberId = memberService.getCurrentMember().getId();
+		
+		if(orderId == null) {
 			return CommonResult.failed(LightningConstant.SERVER_ERROR);
 		}
 		
+		//判断订单信息是否与会员信息匹配
+		Order order = orderMapper.selectByPrimaryKey(orderId);
+		if(order == null || !memberId.equals(order.getMemberId())) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		//判断订单状态是否为已支付状态
+		if(LightningConstant.ORDER_STATUS_PAID.equals(order.getOrderStatus())) {
+			return CommonResult.failed("订单已支付，请勿重复支付");
+		}
 		
 		
 		

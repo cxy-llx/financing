@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wulingqi.lightning.mapper.UnmatchOrderMapper">
+  <resultMap id="BaseResultMap" type="com.wulingqi.lightning.model.UnmatchOrder">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="merchant_id" jdbcType="BIGINT" property="merchantId" />
+    <result column="merchant_order_no" jdbcType="VARCHAR" property="merchantOrderNo" />
+    <result column="pay_order_no" jdbcType="VARCHAR" property="payOrderNo" />
+    <result column="pay_type" jdbcType="INTEGER" property="payType" />
+    <result column="amount" jdbcType="VARCHAR" property="amount" />
+    <result column="success_url" jdbcType="VARCHAR" property="successUrl" />
+    <result column="error_url" jdbcType="VARCHAR" property="errorUrl" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from br_unmatch_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.wulingqi.lightning.model.UnmatchOrder">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into br_unmatch_order (merchant_id, merchant_order_no, pay_order_no, 
+      pay_type, amount, success_url, 
+      error_url, create_time)
+    values (#{merchantId,jdbcType=BIGINT}, #{merchantOrderNo,jdbcType=VARCHAR}, #{payOrderNo,jdbcType=VARCHAR}, 
+      #{payType,jdbcType=INTEGER}, #{amount,jdbcType=VARCHAR}, #{successUrl,jdbcType=VARCHAR}, 
+      #{errorUrl,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.UnmatchOrder">
+    update br_unmatch_order
+    set merchant_id = #{merchantId,jdbcType=BIGINT},
+      merchant_order_no = #{merchantOrderNo,jdbcType=VARCHAR},
+      pay_order_no = #{payOrderNo,jdbcType=VARCHAR},
+      pay_type = #{payType,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=VARCHAR},
+      success_url = #{successUrl,jdbcType=VARCHAR},
+      error_url = #{errorUrl,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, merchant_id, merchant_order_no, pay_order_no, pay_type, amount, success_url, 
+    error_url, create_time
+    from br_unmatch_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, merchant_id, merchant_order_no, pay_order_no, pay_type, amount, success_url, 
+    error_url, create_time
+    from br_unmatch_order
+  </select>
+</mapper>

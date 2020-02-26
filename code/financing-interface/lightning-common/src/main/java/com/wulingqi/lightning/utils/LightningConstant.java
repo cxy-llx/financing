@@ -156,6 +156,20 @@ public class LightningConstant {
      */
     public static final Integer RECHARGE_STATUS_FAILED = 2;
     
+    /**
+     * 订单状态: 0->未支付
+     */
+    public static final Integer ORDER_STATUS_NO_PAY = 0;
+    
+    /**
+     * 订单状态: 1->已支付
+     */
+    public static final Integer ORDER_STATUS_PAID = 1;
+    
+    /**
+     * 订单状态: 2->订单超时
+     */
+    public static final Integer ORDER_STATUS_TIMEOUT = 2;
     
     //----------------------------------业务字典start------------------------------------//
     

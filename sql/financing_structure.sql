@@ -1,4 +1,20 @@
 
+DROP TABLE IF EXISTS `br_unmatch_order`;
+CREATE TABLE IF NOT EXISTS `br_unmatch_order` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `merchant_id` bigint(20) DEFAULT NULL COMMENT '商户主键id',
+  `merchant_order_no` varchar(255) DEFAULT NULL COMMENT '商户订单编号',
+  `pay_order_no` varchar(255) DEFAULT NULL COMMENT '订单编号(支付宝)',
+  `pay_type` int(1) DEFAULT 0 COMMENT '支付方式: 0->支付宝',
+  `amount` varchar(32) DEFAULT NULL COMMENT '支付金额',
+  `success_url` varchar(255) DEFAULT NULL COMMENT '成功回调地址',
+  `error_url` varchar(255) DEFAULT NULL COMMENT '失败回调地址',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `merchant_id` (`merchant_id`),
+  KEY `merchant_order_no` (`merchant_order_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='未匹配订单表';
+
 
 DROP TABLE IF EXISTS `br_order`;
 CREATE TABLE IF NOT EXISTS `br_order` (
@@ -13,8 +29,9 @@ CREATE TABLE IF NOT EXISTS `br_order` (
   `pay_code` varchar(1200) DEFAULT NULL COMMENT '支付码',
   `success_url` varchar(255) DEFAULT NULL COMMENT '成功回调地址',
   `error_url` varchar(255) DEFAULT NULL COMMENT '失败回调地址',
-  `status` int(1) DEFAULT 0 COMMENT '订单状态: 0->等待下发支付码; 1->未支付; 2->已支付; 3->订单超时',
+  `order_status` int(1) DEFAULT 0 COMMENT '订单状态: 0->未支付; 1->已支付; 2->订单超时',
   `callback_status` int(1) DEFAULT 0 COMMENT '回调状态: 0->未回调; 2->已回调',
+  `callback_type` int(1) DEFAULT 0 COMMENT '回调类型: 0->系统回调; 2->手工回调',
   `deadline_time` datetime DEFAULT NULL COMMENT '支付码超时时间',
   `pay_time` datetime DEFAULT NULL COMMENT '支付时间',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',

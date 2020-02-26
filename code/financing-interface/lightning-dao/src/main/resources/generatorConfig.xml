@@ -221,6 +221,15 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
+        <table tableName="br_unmatch_order" domainObjectName="UnmatchOrder" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
         -->
         
         <table tableName="br_order" domainObjectName="Order" 
