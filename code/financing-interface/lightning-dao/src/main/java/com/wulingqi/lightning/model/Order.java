@@ -30,11 +30,6 @@ public class Order implements Serializable {
     private String merchantOrderNo;
 
     /**
-     * 订单编号(支付宝)
-     */
-    private String payOrderNo;
-
-    /**
      * 支付方式: 0->支付宝
      */
     private Integer payType;
@@ -134,14 +129,6 @@ public class Order implements Serializable {
 
     public void setMerchantOrderNo(String merchantOrderNo) {
         this.merchantOrderNo = merchantOrderNo;
-    }
-
-    public String getPayOrderNo() {
-        return payOrderNo;
-    }
-
-    public void setPayOrderNo(String payOrderNo) {
-        this.payOrderNo = payOrderNo;
     }
 
     public Integer getPayType() {
@@ -251,7 +238,6 @@ public class Order implements Serializable {
         sb.append(", memberId=").append(memberId);
         sb.append(", orderNo=").append(orderNo);
         sb.append(", merchantOrderNo=").append(merchantOrderNo);
-        sb.append(", payOrderNo=").append(payOrderNo);
         sb.append(", payType=").append(payType);
         sb.append(", amount=").append(amount);
         sb.append(", payAmount=").append(payAmount);

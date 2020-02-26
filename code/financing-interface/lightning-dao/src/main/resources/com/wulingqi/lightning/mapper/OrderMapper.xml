@@ -7,7 +7,6 @@
     <result column="member_id" jdbcType="BIGINT" property="memberId" />
     <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
     <result column="merchant_order_no" jdbcType="VARCHAR" property="merchantOrderNo" />
-    <result column="pay_order_no" jdbcType="VARCHAR" property="payOrderNo" />
     <result column="pay_type" jdbcType="INTEGER" property="payType" />
     <result column="amount" jdbcType="VARCHAR" property="amount" />
     <result column="pay_amount" jdbcType="VARCHAR" property="payAmount" />
@@ -30,17 +29,17 @@
       SELECT LAST_INSERT_ID()
     </selectKey>
     insert into br_order (merchant_id, member_id, order_no, 
-      merchant_order_no, pay_order_no, pay_type, 
-      amount, pay_amount, pay_code, 
-      success_url, error_url, order_status, 
-      callback_status, callback_type, deadline_time, 
-      pay_time, create_time)
+      merchant_order_no, pay_type, amount, 
+      pay_amount, pay_code, success_url, 
+      error_url, order_status, callback_status, 
+      callback_type, deadline_time, pay_time, 
+      create_time)
     values (#{merchantId,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, #{orderNo,jdbcType=VARCHAR}, 
-      #{merchantOrderNo,jdbcType=VARCHAR}, #{payOrderNo,jdbcType=VARCHAR}, #{payType,jdbcType=INTEGER}, 
-      #{amount,jdbcType=VARCHAR}, #{payAmount,jdbcType=VARCHAR}, #{payCode,jdbcType=VARCHAR}, 
-      #{successUrl,jdbcType=VARCHAR}, #{errorUrl,jdbcType=VARCHAR}, #{orderStatus,jdbcType=INTEGER}, 
-      #{callbackStatus,jdbcType=INTEGER}, #{callbackType,jdbcType=INTEGER}, #{deadlineTime,jdbcType=TIMESTAMP}, 
-      #{payTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+      #{merchantOrderNo,jdbcType=VARCHAR}, #{payType,jdbcType=INTEGER}, #{amount,jdbcType=VARCHAR}, 
+      #{payAmount,jdbcType=VARCHAR}, #{payCode,jdbcType=VARCHAR}, #{successUrl,jdbcType=VARCHAR}, 
+      #{errorUrl,jdbcType=VARCHAR}, #{orderStatus,jdbcType=INTEGER}, #{callbackStatus,jdbcType=INTEGER}, 
+      #{callbackType,jdbcType=INTEGER}, #{deadlineTime,jdbcType=TIMESTAMP}, #{payTime,jdbcType=TIMESTAMP}, 
+      #{createTime,jdbcType=TIMESTAMP})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.wulingqi.lightning.model.Order">
     update br_order
@@ -48,7 +47,6 @@
       member_id = #{memberId,jdbcType=BIGINT},
       order_no = #{orderNo,jdbcType=VARCHAR},
       merchant_order_no = #{merchantOrderNo,jdbcType=VARCHAR},
-      pay_order_no = #{payOrderNo,jdbcType=VARCHAR},
       pay_type = #{payType,jdbcType=INTEGER},
       amount = #{amount,jdbcType=VARCHAR},
       pay_amount = #{payAmount,jdbcType=VARCHAR},
@@ -64,16 +62,16 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select id, merchant_id, member_id, order_no, merchant_order_no, pay_order_no, pay_type, 
-    amount, pay_amount, pay_code, success_url, error_url, order_status, callback_status, 
-    callback_type, deadline_time, pay_time, create_time
+    select id, merchant_id, member_id, order_no, merchant_order_no, pay_type, amount, 
+    pay_amount, pay_code, success_url, error_url, order_status, callback_status, callback_type, 
+    deadline_time, pay_time, create_time
     from br_order
     where id = #{id,jdbcType=BIGINT}
   </select>
   <select id="selectAll" resultMap="BaseResultMap">
-    select id, merchant_id, member_id, order_no, merchant_order_no, pay_order_no, pay_type, 
-    amount, pay_amount, pay_code, success_url, error_url, order_status, callback_status, 
-    callback_type, deadline_time, pay_time, create_time
+    select id, merchant_id, member_id, order_no, merchant_order_no, pay_type, amount, 
+    pay_amount, pay_code, success_url, error_url, order_status, callback_status, callback_type, 
+    deadline_time, pay_time, create_time
     from br_order
   </select>
 </mapper>

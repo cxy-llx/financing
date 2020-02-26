@@ -1,5 +1,16 @@
 
 
+DROP TABLE IF EXISTS `br_member_unmatch_amount`;
+CREATE TABLE IF NOT EXISTS `br_member_unmatch_amount` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
+  `pay_amount` varchar(32) DEFAULT NULL COMMENT '支付金额',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员未匹配金额表';
+
+
 DROP TABLE IF EXISTS `br_account_concurrent_error`;
 CREATE TABLE IF NOT EXISTS `br_account_concurrent_error` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -22,7 +33,6 @@ CREATE TABLE IF NOT EXISTS `br_unmatch_order` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `merchant_id` bigint(20) DEFAULT NULL COMMENT '商户主键id',
   `merchant_order_no` varchar(255) DEFAULT NULL COMMENT '商户订单编号',
-  `pay_order_no` varchar(255) DEFAULT NULL COMMENT '订单编号(支付宝)',
   `pay_type` int(1) DEFAULT 0 COMMENT '支付方式: 0->支付宝',
   `amount` varchar(32) DEFAULT NULL COMMENT '支付金额',
   `success_url` varchar(255) DEFAULT NULL COMMENT '成功回调地址',
@@ -41,7 +51,6 @@ CREATE TABLE IF NOT EXISTS `br_order` (
   `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
   `order_no` varchar(64) DEFAULT NULL COMMENT '系统订单编号',
   `merchant_order_no` varchar(255) DEFAULT NULL COMMENT '商户订单编号',
-  `pay_order_no` varchar(255) DEFAULT NULL COMMENT '订单编号(支付宝)',
   `pay_type` int(1) DEFAULT 0 COMMENT '支付方式: 0->支付宝',
   `amount` varchar(32) DEFAULT NULL COMMENT '订单金额',
   `pay_amount` varchar(32) DEFAULT NULL COMMENT '实付金额',

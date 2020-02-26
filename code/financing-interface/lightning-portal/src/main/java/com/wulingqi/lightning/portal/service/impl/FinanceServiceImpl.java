@@ -14,6 +14,7 @@ import com.github.pagehelper.PageHelper;
 import com.wulingqi.lightning.api.CommonResult;
 import com.wulingqi.lightning.mapper.AccountConcurrentErrorMapper;
 import com.wulingqi.lightning.mapper.MemberIntegrationTradeMapper;
+import com.wulingqi.lightning.mapper.MemberUnmatchAmountMapper;
 import com.wulingqi.lightning.mapper.MerchantBalanceTradeMapper;
 import com.wulingqi.lightning.mapper.MerchantMapper;
 import com.wulingqi.lightning.mapper.OfflineRechargeRecordMapper;
@@ -22,6 +23,7 @@ import com.wulingqi.lightning.mapper.PlatformCollectionInfoMapper;
 import com.wulingqi.lightning.model.AccountConcurrentError;
 import com.wulingqi.lightning.model.Member;
 import com.wulingqi.lightning.model.MemberIntegrationTrade;
+import com.wulingqi.lightning.model.MemberUnmatchAmount;
 import com.wulingqi.lightning.model.Merchant;
 import com.wulingqi.lightning.model.MerchantBalanceTrade;
 import com.wulingqi.lightning.model.OfflineRechargeRecord;
@@ -35,6 +37,7 @@ import com.wulingqi.lightning.portal.dto.RechargeDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMemberMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMerchantMapper;
+import com.wulingqi.lightning.portal.mapper.PortalOrderMapper;
 import com.wulingqi.lightning.portal.service.FinanceService;
 import com.wulingqi.lightning.portal.service.MemberService;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
@@ -81,6 +84,11 @@ public class FinanceServiceImpl implements FinanceService {
 	@Autowired
 	private PortalMerchantMapper portalMerchantMapper;
 	
+	@Autowired
+	private PortalOrderMapper portalOrderMapper;
+	
+	@Autowired
+	private MemberUnmatchAmountMapper memberUnmatchAmountMapper;
 	
 	/**
 	 * 获取公司收款信息
@@ -222,6 +230,52 @@ public class FinanceServiceImpl implements FinanceService {
 			return CommonResult.failed("订单已支付，请勿重复支付");
 		}
 		
+		//调用订单支付
+		orderPay(member, order);
+		
+		return CommonResult.success(null, "支付成功");
+	}
+
+	/**
+	 * 订单支付-自动
+	 */
+	@Override
+	public CommonResult<String> automaticPay(AutomaticPayDto requestDto) {
+		
+		if(StringUtils.isEmpty(requestDto.getValue())) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		String payAmount = new BigDecimal(requestDto.getValue()).setScale(2, BigDecimal.ROUND_DOWN).toPlainString();
+		
+		Member member = memberService.getMemberById(memberService.getCurrentMember().getId());
+		
+		//根据金额查询会员未支付订单
+		Order order = portalOrderMapper.selectOrderByMemberIdAndPayAmount(member.getId(), payAmount);
+		Date currentDate = new Date();
+		if(order == null || currentDate.getTime() > order.getDeadlineTime().getTime()) {
+			MemberUnmatchAmount unmatchAmount = new MemberUnmatchAmount();
+			unmatchAmount.setMemberId(member.getId());
+			unmatchAmount.setPayAmount(payAmount);
+			memberUnmatchAmountMapper.insert(unmatchAmount);
+		} else {
+			
+			//调用订单支付
+			orderPay(member, order);
+			
+		}
+		
+		return CommonResult.success(null, "支付成功");
+	}
+	
+	
+	/**
+	 * 订单支付
+	 * @param member
+	 * @param order
+	 */
+	private void orderPay(Member member, Order order) {
+		
 		Date currentDate = new Date();
 		
 		//更新订单状态和支付时间
@@ -267,18 +321,6 @@ public class FinanceServiceImpl implements FinanceService {
 					LightningConstant.TRADE_ITEM_ORDER_PAY, tradeValue, "订单支付", order.getOrderNo(), currentDate);
 		}
 		
-		return CommonResult.success(null, "支付成功");
-	}
-
-	/**
-	 * 订单支付-自动
-	 */
-	@Override
-	public CommonResult<String> automaticPay(AutomaticPayDto requestDto) {
-		
-		Long memberId = memberService.getCurrentMember().getId();
-		
-		return null;
 	}
 	
 	/**

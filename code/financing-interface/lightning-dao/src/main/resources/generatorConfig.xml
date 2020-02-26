@@ -221,15 +221,6 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true" />
         </table>
         
-        <table tableName="br_unmatch_order" domainObjectName="UnmatchOrder" 
-			enableCountByExample="false"
-			enableUpdateByExample="false"
-			enableDeleteByExample="false"
-			enableSelectByExample="false"
-			selectByExampleQueryId="false" >
-            <generatedKey column="id" sqlStatement="MySql" identity="true" />
-        </table>
-        
         <table tableName="br_order_callback" domainObjectName="OrderCallback" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
@@ -251,6 +242,24 @@
         -->
         
         <table tableName="br_order" domainObjectName="Order" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_unmatch_order" domainObjectName="UnmatchOrder" 
+			enableCountByExample="false"
+			enableUpdateByExample="false"
+			enableDeleteByExample="false"
+			enableSelectByExample="false"
+			selectByExampleQueryId="false" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+        </table>
+        
+        <table tableName="br_member_unmatch_amount" domainObjectName="MemberUnmatchAmount" 
 			enableCountByExample="false"
 			enableUpdateByExample="false"
 			enableDeleteByExample="false"

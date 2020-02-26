@@ -20,11 +20,6 @@ public class UnmatchOrder implements Serializable {
     private String merchantOrderNo;
 
     /**
-     * 订单编号(支付宝)
-     */
-    private String payOrderNo;
-
-    /**
      * 支付方式: 0->支付宝
      */
     private Integer payType;
@@ -73,14 +68,6 @@ public class UnmatchOrder implements Serializable {
 
     public void setMerchantOrderNo(String merchantOrderNo) {
         this.merchantOrderNo = merchantOrderNo;
-    }
-
-    public String getPayOrderNo() {
-        return payOrderNo;
-    }
-
-    public void setPayOrderNo(String payOrderNo) {
-        this.payOrderNo = payOrderNo;
     }
 
     public Integer getPayType() {
@@ -132,7 +119,6 @@ public class UnmatchOrder implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", merchantId=").append(merchantId);
         sb.append(", merchantOrderNo=").append(merchantOrderNo);
-        sb.append(", payOrderNo=").append(payOrderNo);
         sb.append(", payType=").append(payType);
         sb.append(", amount=").append(amount);
         sb.append(", successUrl=").append(successUrl);
