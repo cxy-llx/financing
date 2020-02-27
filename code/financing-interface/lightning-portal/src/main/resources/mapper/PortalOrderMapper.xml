@@ -12,5 +12,21 @@
         and a.pay_amount = #{payAmount}
 		order by a.create_time desc limit 1        
     </select>
+    
+    <select id="selectOrderCallbackByOrderId" resultMap="com.wulingqi.lightning.mapper.OrderCallbackMapper.BaseResultMap">
+        select
+            *
+        from
+            br_order_callback a
+        where a.order_id = #{orderId}
+    </select>
+    
+    <select id="selectOrderByOrderNo" resultMap="com.wulingqi.lightning.mapper.OrderMapper.BaseResultMap">
+        select
+            *
+        from
+            br_order a
+        where a.order_no = #{orderNo}
+    </select>
    	
 </mapper>

@@ -40,6 +40,7 @@ import com.wulingqi.lightning.portal.mapper.PortalMerchantMapper;
 import com.wulingqi.lightning.portal.mapper.PortalOrderMapper;
 import com.wulingqi.lightning.portal.service.FinanceService;
 import com.wulingqi.lightning.portal.service.MemberService;
+import com.wulingqi.lightning.portal.service.RedisService;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
 import com.wulingqi.lightning.portal.vo.IntegrationDetailVo;
 import com.wulingqi.lightning.portal.vo.RechargeDetailVo;
@@ -89,6 +90,9 @@ public class FinanceServiceImpl implements FinanceService {
 	
 	@Autowired
 	private MemberUnmatchAmountMapper memberUnmatchAmountMapper;
+	
+	@Autowired
+    private RedisService redisService;
 	
 	/**
 	 * 获取公司收款信息
@@ -230,6 +234,16 @@ public class FinanceServiceImpl implements FinanceService {
 			return CommonResult.failed("订单已支付，请勿重复支付");
 		}
 		
+		//查看订单是否存在回调任务，如果不存在，添加回调任务
+		String key = LightningConstant.REDIS_KEY_ORDER_NO + order.getOrderNo();
+		if(StringUtils.isEmpty(redisService.get(key))) {
+			redisService.set(key, String.valueOf(order.getId()));
+			//设置过期时间为1s
+			redisService.expire(key, 1);
+		} else {
+			return CommonResult.failed("订单已支付，请勿重复支付");
+		}
+		
 		//调用订单支付
 		orderPay(member, order);
 		
@@ -260,6 +274,16 @@ public class FinanceServiceImpl implements FinanceService {
 			memberUnmatchAmountMapper.insert(unmatchAmount);
 		} else {
 			
+			//查看订单是否存在回调任务，如果不存在，添加回调任务
+			String key = LightningConstant.REDIS_KEY_ORDER_NO + order.getOrderNo();
+			if(StringUtils.isEmpty(redisService.get(key))) {
+				redisService.set(key, String.valueOf(order.getId()));
+				//设置过期时间为1s
+				redisService.expire(key, 1);
+			} else {
+				return CommonResult.failed("订单已支付，请勿重复支付");
+			}
+			
 			//调用订单支付
 			orderPay(member, order);
 			
@@ -284,8 +308,6 @@ public class FinanceServiceImpl implements FinanceService {
 		order.setPayTime(currentDate);
 		
 		orderMapper.updateByPrimaryKey(order);
-		
-		//查看订单是否还存在回调任务，如果不存在，添加回调任务
 		
 		//扣减会员冻结余额
 		BigDecimal freezeIntegration = new BigDecimal(member.getFreezeIntegration());

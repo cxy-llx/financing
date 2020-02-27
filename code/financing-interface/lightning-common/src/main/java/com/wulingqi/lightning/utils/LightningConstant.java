@@ -17,6 +17,11 @@ public class LightningConstant {
     public static final String SERVER_ERROR= "服务器繁忙，请稍后再试";
     
     /**
+     * 订单延迟redis key
+     */
+    public static final String REDIS_KEY_ORDER_NO = "orderNo:";
+    
+    /**
 	 * 通用数据缓存redis key
 	 */
 	public static final String GENERAL_DATA = "general_data";
@@ -215,6 +220,16 @@ public class LightningConstant {
      * 交易项目: 1->订单支付
      */
     public static final Integer TRADE_ITEM_ORDER_PAY = 1;
+    
+    /**
+     * 回调状态: 0->未回调
+     */
+    public static final Integer CALLBACK_STATUS_NO = 0;
+    
+    /**
+     * 回调状态: 1->已回调
+     */
+    public static final Integer CALLBACK_STATUS_YES = 1;
     
     
     //----------------------------------业务字典start------------------------------------//

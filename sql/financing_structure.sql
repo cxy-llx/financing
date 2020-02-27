@@ -1,4 +1,5 @@
 
+
 DROP TABLE IF EXISTS `br_issue`;
 CREATE TABLE IF NOT EXISTS `br_issue` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -10,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `br_issue` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='问题反馈表';
+
 
 DROP TABLE IF EXISTS `br_member_unmatch_amount`;
 CREATE TABLE IF NOT EXISTS `br_member_unmatch_amount` (
