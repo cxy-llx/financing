@@ -15,7 +15,7 @@
             *
         from
             br_verification_code
-        where phone = #{phone}
+        where receiver = #{receiver}
         and create_time >= DATE_SUB(NOW(), INTERVAL #{minute} MINUTE)
     </select>
     

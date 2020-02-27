@@ -185,7 +185,7 @@ public class MemberServiceImpl implements MemberService {
         Date currentDate = new Date();
         member = new Member();
         //没有该用户进行添加操作
-        member.setUsername(null);
+        member.setUsername(requestDto.getAccount());
         member.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         member.setEmail(null);
         member.setPhone(requestDto.getAccount());

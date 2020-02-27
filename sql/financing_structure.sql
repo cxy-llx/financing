@@ -1,4 +1,15 @@
 
+DROP TABLE IF EXISTS `br_issue`;
+CREATE TABLE IF NOT EXISTS `br_issue` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+  `member_id` bigint(20) DEFAULT NULL COMMENT '会员id',
+  `issue_type` int(1) DEFAULT NULL COMMENT '问题类型: 0->订单; 1->其它',
+  `contact_way` varchar(255) DEFAULT NULL COMMENT '微信/手机/邮箱',
+  `content` varchar(1000) DEFAULT NULL COMMENT '内容',
+  `image_url` varchar(2000) DEFAULT NULL COMMENT '图片地址(多张图片有,号分隔)',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='问题反馈表';
 
 DROP TABLE IF EXISTS `br_member_unmatch_amount`;
 CREATE TABLE IF NOT EXISTS `br_member_unmatch_amount` (
