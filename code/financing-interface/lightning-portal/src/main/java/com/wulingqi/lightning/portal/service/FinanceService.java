@@ -4,13 +4,17 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.portal.dto.ConfirmWithdrawDto;
 import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
 import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
+import com.wulingqi.lightning.portal.dto.RefuseWithdrawDto;
+import com.wulingqi.lightning.portal.dto.WithdrawApplyDto;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
 import com.wulingqi.lightning.portal.vo.IntegrationDetailVo;
 import com.wulingqi.lightning.portal.vo.RechargeDetailVo;
@@ -76,5 +80,23 @@ public interface FinanceService {
 	 */
 	void insertAccountConcurrentError(Long id, Integer userType, Integer tradeType, Integer tradeItem,
 			BigDecimal value, String title, String note, Date createTime);
+	
+	/**
+	 * 商户提现申请
+	 */
+	@Transactional
+	CommonResult<String> withdrawApply(WithdrawApplyDto requestDto);
+	
+	/**
+	 * 确认商户提现
+	 */
+	@Transactional
+	CommonResult<String> confirmWithdraw(ConfirmWithdrawDto requestDto);
+	
+	/**
+	 * 拒绝商户提现
+	 */
+	@Transactional
+	CommonResult<String> refuseWithdraw(RefuseWithdrawDto requestDto);
 	
 }

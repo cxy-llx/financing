@@ -17,6 +17,7 @@ import com.wulingqi.lightning.mapper.MemberIntegrationTradeMapper;
 import com.wulingqi.lightning.mapper.MemberUnmatchAmountMapper;
 import com.wulingqi.lightning.mapper.MerchantBalanceTradeMapper;
 import com.wulingqi.lightning.mapper.MerchantMapper;
+import com.wulingqi.lightning.mapper.MerchantWithdrawApplyMapper;
 import com.wulingqi.lightning.mapper.OfflineRechargeRecordMapper;
 import com.wulingqi.lightning.mapper.OrderMapper;
 import com.wulingqi.lightning.mapper.PlatformCollectionInfoMapper;
@@ -26,18 +27,23 @@ import com.wulingqi.lightning.model.MemberIntegrationTrade;
 import com.wulingqi.lightning.model.MemberUnmatchAmount;
 import com.wulingqi.lightning.model.Merchant;
 import com.wulingqi.lightning.model.MerchantBalanceTrade;
+import com.wulingqi.lightning.model.MerchantWithdrawApply;
 import com.wulingqi.lightning.model.OfflineRechargeRecord;
 import com.wulingqi.lightning.model.Order;
 import com.wulingqi.lightning.model.PlatformCollectionInfo;
 import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.ConfirmWithdrawDto;
 import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
+import com.wulingqi.lightning.portal.dto.RefuseWithdrawDto;
+import com.wulingqi.lightning.portal.dto.WithdrawApplyDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMemberMapper;
 import com.wulingqi.lightning.portal.mapper.PortalMerchantMapper;
 import com.wulingqi.lightning.portal.mapper.PortalOrderMapper;
+import com.wulingqi.lightning.portal.service.CommonService;
 import com.wulingqi.lightning.portal.service.FinanceService;
 import com.wulingqi.lightning.portal.service.MemberService;
 import com.wulingqi.lightning.portal.service.RedisService;
@@ -51,6 +57,9 @@ import com.wulingqi.lightning.utils.StringUtils;
 public class FinanceServiceImpl implements FinanceService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FinanceServiceImpl.class);
+	
+	@Autowired
+	private CommonService commonService;
 	
 	@Autowired
 	private MemberService memberService;
@@ -90,6 +99,9 @@ public class FinanceServiceImpl implements FinanceService {
 	
 	@Autowired
 	private MemberUnmatchAmountMapper memberUnmatchAmountMapper;
+	
+	@Autowired
+	private MerchantWithdrawApplyMapper merchantWithdrawApplyMapper;
 	
 	@Autowired
     private RedisService redisService;
@@ -420,6 +432,181 @@ public class FinanceServiceImpl implements FinanceService {
 		
 		accountConcurrentErrorMapper.insert(record);
 		
+	}
+
+	/**
+	 * 商户提现申请
+	 */
+	@Override
+	public CommonResult<String> withdrawApply(WithdrawApplyDto requestDto) {
+		
+		if(requestDto.getMerchantId() == null
+				|| requestDto.getValue() == null
+				|| requestDto.getValue() <= 0
+				|| StringUtils.isEmpty(requestDto.getBankName())
+				|| StringUtils.isEmpty(requestDto.getBankAccount())
+				|| StringUtils.isEmpty(requestDto.getBankCardNo())) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		//允许转账的最小数量(设置为0时表示不限制)
+		double withdrawLowerLimit = Double.valueOf(commonService.getDictionaryValue(LightningConstant.WITHDRAW_LOWER_LIMIT));
+		//允许转账的整数倍数(设置为0时表示不限制)
+		double withdrawMultiple = Double.valueOf(commonService.getDictionaryValue(LightningConstant.WITHDRAW_MULTIPLE));
+		
+		//如果限制条件设置为0，表示不限制
+		if(withdrawLowerLimit != 0 && requestDto.getValue() < withdrawLowerLimit) {
+			return CommonResult.failed("提现金额必须大于" + withdrawLowerLimit);
+		}
+		if(withdrawMultiple != 0 && requestDto.getValue() % withdrawMultiple != 0) {
+			return CommonResult.failed("提现金额必须是" + withdrawMultiple + "的倍数");
+		}
+		
+		Merchant merchant = merchantMapper.selectByPrimaryKey(requestDto.getMerchantId());
+		if(LightningConstant.DELETE_STATUS_DELETEED.equals(merchant.getDeleteStatus())) {
+			return CommonResult.failed("账号已被删除");
+		}
+		
+		if(LightningConstant.STATUS_DISABLE.equals(merchant.getStatus())) {
+			return CommonResult.failed("账号已被冻结");
+		}
+		
+		if(StringUtils.isEmpty(merchant.getSettlementRate())) {
+			return CommonResult.failed("结算费率为空");
+		}
+		
+		BigDecimal balance = new BigDecimal(merchant.getBalance());
+		BigDecimal value = new BigDecimal(requestDto.getValue()).setScale(2, BigDecimal.ROUND_DOWN);
+		BigDecimal settlementRate = new BigDecimal(merchant.getSettlementRate());
+		BigDecimal poundage = value.multiply(settlementRate);
+		
+		if(balance.compareTo(value) < 0) {
+			return CommonResult.failed("余额不足");
+		}
+		
+		MerchantWithdrawApply withdrawApply = new MerchantWithdrawApply();
+		withdrawApply.setMerchantId(requestDto.getMerchantId());
+		withdrawApply.setValue(value.toPlainString());
+		withdrawApply.setPoundage(poundage.toPlainString());
+		withdrawApply.setActualValue(value.subtract(poundage).toPlainString());
+		withdrawApply.setBankName(requestDto.getBankName());
+		withdrawApply.setBankAccount(requestDto.getBankAccount());
+		withdrawApply.setBankCardNo(requestDto.getBankCardNo());
+		withdrawApply.setWithdrawStatus(LightningConstant.WITHDRAW_STATUS_APPLY);
+		withdrawApply.setCreateTime(new Date());
+		merchantWithdrawApplyMapper.insert(withdrawApply);
+		
+		//划转账户余额到冻结余额
+		merchant.setBalance(balance.subtract(value).toPlainString());
+		merchant.setFreezeBalance(new BigDecimal(merchant.getFreezeBalance()).add(value).toPlainString());
+		int count = portalMerchantMapper.updateMerchantByPrimaryKey(merchant);
+		if(count != 1) {
+			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+		}
+		
+		return CommonResult.success(null, "提现申请成功");
+	}
+
+	/**
+	 * 确认商户提现
+	 */
+	@Override
+	public CommonResult<String> confirmWithdraw(ConfirmWithdrawDto requestDto) {
+		
+		if(requestDto.getWithdrawId() == null) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+
+		MerchantWithdrawApply withdrawApply = merchantWithdrawApplyMapper.selectByPrimaryKey(requestDto.getWithdrawId());
+		if(!LightningConstant.WITHDRAW_STATUS_APPLY.equals(withdrawApply.getWithdrawStatus())) {
+			return CommonResult.failed("提现状态异常");
+		}
+		
+		Merchant merchant = merchantMapper.selectByPrimaryKey(withdrawApply.getMerchantId());
+		if(LightningConstant.DELETE_STATUS_DELETEED.equals(merchant.getDeleteStatus())) {
+			return CommonResult.failed("账号已被删除");
+		}
+		
+		if(LightningConstant.STATUS_DISABLE.equals(merchant.getStatus())) {
+			return CommonResult.failed("账号已被冻结");
+		}
+		
+		BigDecimal freezeBalance = new BigDecimal(merchant.getFreezeBalance());
+		BigDecimal value = new BigDecimal(withdrawApply.getValue());
+		
+		if(freezeBalance.compareTo(value) < 0) {
+			return CommonResult.failed("账户数据异常");
+		}
+		
+		Date currentDate = new Date();
+		
+		withdrawApply.setArrivedTime(currentDate);
+		withdrawApply.setWithdrawStatus(LightningConstant.WITHDRAW_STATUS_SUCCESS);
+		merchantWithdrawApplyMapper.updateByPrimaryKey(withdrawApply);
+		
+		BigDecimal balance = new BigDecimal(merchant.getBalance());
+		BigDecimal beforeValue = balance.add(freezeBalance);
+		BigDecimal afterValue = beforeValue.subtract(value);
+		
+		//写入商户账户交易记录
+		insertAccountTrade(merchant.getId(), LightningConstant.USER_TYPE_MERCHANT, LightningConstant.TRADE_TYPE_EXPEND,
+				LightningConstant.TRADE_ITEM_WITHDRAW, beforeValue, value, afterValue, "提现", null, currentDate);
+		
+		//扣除冻结金额
+		merchant.setFreezeBalance(freezeBalance.subtract(value).toPlainString());
+		int count = portalMerchantMapper.updateMerchantByPrimaryKey(merchant);
+		if(count != 1) {
+			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+		}
+		
+		return CommonResult.success(null, "确认提现成功");
+	}
+
+	/**
+	 * 拒绝商户提现
+	 */
+	@Override
+	public CommonResult<String> refuseWithdraw(RefuseWithdrawDto requestDto) {
+		
+		if(requestDto.getWithdrawId() == null
+				|| StringUtils.isEmpty(requestDto.getFailedReason())) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		MerchantWithdrawApply withdrawApply = merchantWithdrawApplyMapper.selectByPrimaryKey(requestDto.getWithdrawId());
+		if(!LightningConstant.WITHDRAW_STATUS_APPLY.equals(withdrawApply.getWithdrawStatus())) {
+			return CommonResult.failed("提现状态异常");
+		}
+		
+		Merchant merchant = merchantMapper.selectByPrimaryKey(withdrawApply.getMerchantId());
+		if(LightningConstant.DELETE_STATUS_DELETEED.equals(merchant.getDeleteStatus())) {
+			return CommonResult.failed(LightningConstant.SERVER_ERROR);
+		}
+		
+		if(LightningConstant.STATUS_DISABLE.equals(merchant.getStatus())) {
+			return CommonResult.failed("账号已被冻结");
+		}
+		
+		BigDecimal freezeBalance = new BigDecimal(merchant.getFreezeBalance());
+		BigDecimal value = new BigDecimal(withdrawApply.getValue());
+		
+		if(freezeBalance.compareTo(value) < 0) {
+			return CommonResult.failed("账户数据异常");
+		}
+		
+		withdrawApply.setFailedReason(requestDto.getFailedReason());
+		withdrawApply.setWithdrawStatus(LightningConstant.WITHDRAW_STATUS_FAILURE);
+		merchantWithdrawApplyMapper.updateByPrimaryKey(withdrawApply);
+		
+		//划转账户冻结余额到余额
+		merchant.setBalance(new BigDecimal(merchant.getBalance()).add(value).toPlainString());
+		merchant.setFreezeBalance(freezeBalance.subtract(value).toPlainString());
+		int count = portalMerchantMapper.updateMerchantByPrimaryKey(merchant);
+		if(count != 1) {
+			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+		}
+		
+		return CommonResult.success();
 	}
 
 }

@@ -7,11 +7,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.portal.dto.ConfirmWithdrawDto;
 import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
 import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
+import com.wulingqi.lightning.portal.dto.RefuseWithdrawDto;
+import com.wulingqi.lightning.portal.dto.WithdrawApplyDto;
 import com.wulingqi.lightning.portal.service.FinanceService;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
 import com.wulingqi.lightning.portal.vo.IntegrationDetailVo;
@@ -62,6 +65,24 @@ public class FinanceController {
     @RequestMapping(value = "/automaticPay", method = RequestMethod.POST)
     public CommonResult<String> automaticPay(@RequestBody AutomaticPayDto requestDto) {
 		return financeService.automaticPay(requestDto);
+    }
+	
+	@ApiOperation("商户提现申请")
+    @RequestMapping(value = "/withdrawApply", method = RequestMethod.POST)
+    public CommonResult<String> withdrawApply(@RequestBody WithdrawApplyDto requestDto) {
+		return financeService.withdrawApply(requestDto);
+    }
+	
+	@ApiOperation("确认商户提现")
+    @RequestMapping(value = "/confirmWithdraw", method = RequestMethod.POST)
+    public CommonResult<String> confirmWithdraw(@RequestBody ConfirmWithdrawDto requestDto) {
+		return financeService.confirmWithdraw(requestDto);
+    }
+	
+	@ApiOperation("拒绝商户提现")
+    @RequestMapping(value = "/refuseWithdraw", method = RequestMethod.POST)
+    public CommonResult<String> refuseWithdraw(@RequestBody RefuseWithdrawDto requestDto) {
+		return financeService.refuseWithdraw(requestDto);
     }
 
 }

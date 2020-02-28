@@ -393,7 +393,10 @@ INSERT INTO `br_business_dictionary` (`name`, `value`, `comment`, `show_status`,
 
 INSERT INTO `br_business_dictionary` (`name`, `value`, `comment`, `show_status`, `update_time`) VALUES
 	('member_agent_ratio', '0.02', '会员默认代理分销比例', 1, now());
-
+INSERT INTO `br_business_dictionary` (`name`, `value`, `comment`, `show_status`, `update_time`) VALUES
+	('withdraw_lower_limit', '10', '允许商户提现的最小数量(设置为0时表示不限制)', 1, now());
+INSERT INTO `br_business_dictionary` (`name`, `value`, `comment`, `show_status`, `update_time`) VALUES
+	('withdraw_multiple', '10', '允许商户提现的整数倍数(设置为0时表示不限制)', 1, now());
 
 DELETE FROM `br_general_data`;
 INSERT INTO `mall_general_data` (`field`, `value`, `note`) VALUES 

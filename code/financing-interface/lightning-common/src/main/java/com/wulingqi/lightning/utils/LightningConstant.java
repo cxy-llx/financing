@@ -222,6 +222,11 @@ public class LightningConstant {
     public static final Integer TRADE_ITEM_ORDER_PAY = 1;
     
     /**
+     * 交易项目: 2->商户提现
+     */
+    public static final Integer TRADE_ITEM_WITHDRAW = 2;
+    
+    /**
      * 回调状态: 0->未回调
      */
     public static final Integer CALLBACK_STATUS_NO = 0;
@@ -230,6 +235,21 @@ public class LightningConstant {
      * 回调状态: 1->已回调
      */
     public static final Integer CALLBACK_STATUS_YES = 1;
+    
+    /**
+     * 提现状态: 0->申请中
+     */
+    public static final Integer WITHDRAW_STATUS_APPLY = 0;
+    
+    /**
+     * 提现状态: 1->成功
+     */
+    public static final Integer WITHDRAW_STATUS_SUCCESS = 1;
+    
+    /**
+     * 提现状态: 2->失败
+     */
+    public static final Integer WITHDRAW_STATUS_FAILURE = 2;
     
     
     //----------------------------------业务字典start------------------------------------//
@@ -243,6 +263,16 @@ public class LightningConstant {
      * 会员默认代理分销比例
      */
     public static final String MEMBER_AGENT_RATIO = "member_agent_ratio";
+    
+    /**
+   	 * 允许提现的最小数量(设置为0时表示不限制)
+   	 */
+   	public static final String WITHDRAW_LOWER_LIMIT = "withdraw_lower_limit";
+    
+    /**
+	 * 允许提现的整数倍数(设置为0时表示不限制)
+	 */
+	public static final String WITHDRAW_MULTIPLE = "withdraw_multiple";
     
     //----------------------------------业务字典end------------------------------------//
     
