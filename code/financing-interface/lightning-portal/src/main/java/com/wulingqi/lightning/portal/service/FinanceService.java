@@ -10,9 +10,11 @@ import com.wulingqi.lightning.api.CommonResult;
 import com.wulingqi.lightning.portal.dto.ConfirmWithdrawDto;
 import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.ConfirmRechargeDto;
 import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
+import com.wulingqi.lightning.portal.dto.RefuseRechargeDto;
 import com.wulingqi.lightning.portal.dto.RefuseWithdrawDto;
 import com.wulingqi.lightning.portal.dto.WithdrawApplyDto;
 import com.wulingqi.lightning.portal.vo.CollectionInfoVo;
@@ -98,5 +100,19 @@ public interface FinanceService {
 	 */
 	@Transactional
 	CommonResult<String> refuseWithdraw(RefuseWithdrawDto requestDto);
+
+	/**
+	  *  充值审核通过
+	 * @param confirmTopUpDto
+	 * @return
+	 */
+	CommonResult<String> confirmRecharge(ConfirmRechargeDto confirmTopUpDto);
+
+	/**
+	 * 审核失败
+	 * @param refuseRechargeDto
+	 * @return
+	 */
+	CommonResult<String> refuseRecharge(RefuseRechargeDto refuseRechargeDto);
 	
 }

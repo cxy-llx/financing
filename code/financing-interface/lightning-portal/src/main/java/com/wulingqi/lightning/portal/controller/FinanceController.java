@@ -1,18 +1,23 @@
 package com.wulingqi.lightning.portal.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wulingqi.lightning.annotation.Limit;
 import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.aspect.LimitType;
 import com.wulingqi.lightning.portal.dto.ConfirmWithdrawDto;
 import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.ConfirmRechargeDto;
 import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
+import com.wulingqi.lightning.portal.dto.RefuseRechargeDto;
 import com.wulingqi.lightning.portal.dto.RefuseWithdrawDto;
 import com.wulingqi.lightning.portal.dto.WithdrawApplyDto;
 import com.wulingqi.lightning.portal.service.FinanceService;
@@ -84,5 +89,18 @@ public class FinanceController {
     public CommonResult<String> refuseWithdraw(@RequestBody RefuseWithdrawDto requestDto) {
 		return financeService.refuseWithdraw(requestDto);
     }
+	
+	@ApiOperation("充值审核通过")
+    @RequestMapping(value = "/confirmRecharge", method = RequestMethod.POST)
+	@Limit(limitType=LimitType.IP, count = 1, period = 2)
+    public CommonResult<String> confirmRecharge(@Validated @RequestBody  ConfirmRechargeDto confirmTopUpDto) {
+		return financeService.confirmRecharge(confirmTopUpDto);
+    }
 
+	@ApiOperation("审核失败")
+    @RequestMapping(value = "/refuseRecharge", method = RequestMethod.POST)
+    public CommonResult<String> refuseRecharge(@Validated @RequestBody  RefuseRechargeDto refuseRechargeDto) {
+		return financeService.refuseRecharge(refuseRechargeDto);
+    }
+	
 }

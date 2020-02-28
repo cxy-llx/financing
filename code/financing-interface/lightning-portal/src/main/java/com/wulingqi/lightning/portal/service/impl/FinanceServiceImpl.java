@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
 import com.wulingqi.lightning.api.CommonResult;
+import com.wulingqi.lightning.exception.BadRequestException;
 import com.wulingqi.lightning.mapper.AccountConcurrentErrorMapper;
 import com.wulingqi.lightning.mapper.MemberIntegrationTradeMapper;
 import com.wulingqi.lightning.mapper.MemberUnmatchAmountMapper;
@@ -33,10 +34,12 @@ import com.wulingqi.lightning.model.Order;
 import com.wulingqi.lightning.model.PlatformCollectionInfo;
 import com.wulingqi.lightning.portal.dto.AutomaticPayDto;
 import com.wulingqi.lightning.portal.dto.CollectionInfoDto;
+import com.wulingqi.lightning.portal.dto.ConfirmRechargeDto;
 import com.wulingqi.lightning.portal.dto.ConfirmWithdrawDto;
 import com.wulingqi.lightning.portal.dto.ManualPayDto;
 import com.wulingqi.lightning.portal.dto.PageableDto;
 import com.wulingqi.lightning.portal.dto.RechargeDto;
+import com.wulingqi.lightning.portal.dto.RefuseRechargeDto;
 import com.wulingqi.lightning.portal.dto.RefuseWithdrawDto;
 import com.wulingqi.lightning.portal.dto.WithdrawApplyDto;
 import com.wulingqi.lightning.portal.mapper.PortalMapper;
@@ -607,6 +610,69 @@ public class FinanceServiceImpl implements FinanceService {
 		}
 		
 		return CommonResult.success();
+	}
+
+	@Override
+	public CommonResult<String> confirmRecharge(ConfirmRechargeDto confirmTopUpDto) {
+		
+		OfflineRechargeRecord offlineRechargeRecord=offlineRechargeRecordMapper.selectByPrimaryKey(confirmTopUpDto.getId());
+		//验证充值状态
+		if(!offlineRechargeRecord.getRechargeStatus().equals(LightningConstant.RECHARGE_STATUS_RECHARGE)) {
+			throw new BadRequestException("充值状态异常！");
+		}
+		
+		//统一时间
+		Date now=new Date();
+		
+		offlineRechargeRecord.setRechargeStatus(LightningConstant.RECHARGE_STATUS_SUCCEED);
+		offlineRechargeRecord.setRechargeTime(now);
+		
+		Member member=memberService.getMemberById(offlineRechargeRecord.getMemberId());
+		
+		BigDecimal Integration = new BigDecimal(member.getIntegration());
+		BigDecimal freezeIntegration = new BigDecimal(member.getFreezeIntegration());
+		
+		BigDecimal value = new BigDecimal(offlineRechargeRecord.getValue());
+		
+		MemberIntegrationTrade memberIntegrationTrade=new MemberIntegrationTrade();
+		memberIntegrationTrade.setMemberId(member.getId());
+		memberIntegrationTrade.setTradeType(LightningConstant.TRADE_TYPE_INCOME);
+		memberIntegrationTrade.setTradeItem(LightningConstant.TRADE_ITEM_RECHARGE);
+		memberIntegrationTrade.setBeforeValue(Integration.add(freezeIntegration).toPlainString());
+		memberIntegrationTrade.setValue(value.toPlainString());
+		memberIntegrationTrade.setAfterValue(Integration.add(freezeIntegration).add(value).toPlainString());
+		memberIntegrationTrade.setTitle("充值");
+		memberIntegrationTrade.setNote("充值");
+		memberIntegrationTrade.setCreateTime(now);
+		memberIntegrationTradeMapper.insert(memberIntegrationTrade);
+		
+		member.setIntegration(Integration.add(value).toPlainString());
+		
+		int count= portalMemberMapper.updateMemberByPrimaryKey(member);
+		if(count != 1) {
+			throw new RuntimeException(LightningConstant.SERVER_ERROR);
+		}
+		
+		offlineRechargeRecordMapper.updateByPrimaryKey(offlineRechargeRecord);
+		
+		return CommonResult.success();
+		
+	}
+
+	@Override
+	public CommonResult<String> refuseRecharge(RefuseRechargeDto refuseRechargeDto) {
+		
+		OfflineRechargeRecord offlineRechargeRecord=offlineRechargeRecordMapper.selectByPrimaryKey(refuseRechargeDto.getId());
+		//验证充值状态
+		if(!offlineRechargeRecord.getRechargeStatus().equals(LightningConstant.RECHARGE_STATUS_RECHARGE)) {
+			throw new BadRequestException("充值状态异常！");
+		}
+		
+		offlineRechargeRecord.setFailedReason(refuseRechargeDto.getFailedReason());
+		offlineRechargeRecordMapper.updateByPrimaryKey(offlineRechargeRecord);
+		
+		return CommonResult.success();
+		
 	}
 
 }
